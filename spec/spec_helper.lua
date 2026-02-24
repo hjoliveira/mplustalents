@@ -28,6 +28,10 @@ local function resetMocks()
     _G._playerClass = "WARRIOR"
     _G._playerClassName = "Warrior"
 
+    -- Player spec defaults
+    _G._specIndex = 1
+    _G._specName = "Arms"
+
     -- CreateFrame mock
     _G.CreateFrame = function(frameType, name, parent, template)
         eventFrame = {
@@ -62,6 +66,16 @@ local function resetMocks()
     -- UnitClass mock
     _G.UnitClass = function(unit)
         return _G._playerClassName, _G._playerClass
+    end
+
+    -- GetSpecialization mock
+    _G.GetSpecialization = function()
+        return _G._specIndex
+    end
+
+    -- GetSpecializationInfo mock
+    _G.GetSpecializationInfo = function(specIndex)
+        return nil, _G._specName
     end
 
     -- print mock that captures output

@@ -3,8 +3,8 @@
 
 local ADDON_PREFIX = "|cff00ccff[M+ Talents]|r"
 
--- Talent recommendations keyed by instanceID (Map.db2), then by class token.
--- Each entry is a list of talent names/notes to display to the player.
+-- Talent recommendations keyed by instanceID (Map.db2), then by class token,
+-- then by spec name. Each leaf entry is a list of talent names/notes.
 local TALENT_DATA = {
     ---- Midnight Season 1 Dungeons ----
 
@@ -56,9 +56,15 @@ local TALENT_DATA = {
         dungeonName = "Dornogal",
         classes = {
             ["SHAMAN"] = {
-                "Ascendance",
-                "Stormkeeper",
-                "Liquid Magma Totem",
+                ["Elemental"] = {
+                    "Stormkeeper",
+                    "Liquid Magma Totem",
+                    "Ascendance",
+                },
+                ["Restoration"] = {
+                    "Healing Tide Totem",
+                    "Ancestral Vigor",
+                },
             },
         },
     },
@@ -77,14 +83,18 @@ frame:SetScript("OnEvent", function(self, event, ...)
         end
 
         local className, classToken = UnitClass("player")
-        local talents = dungeonData.classes[classToken]
+        local specIndex = GetSpecialization()
+        local _, specName = GetSpecializationInfo(specIndex)
+
+        local classData = dungeonData.classes[classToken]
+        local talents = classData and classData[specName]
 
         if not talents or #talents == 0 then
-            print(ADDON_PREFIX .. " " .. dungeonData.dungeonName .. " — no talent recommendations for " .. className .. " yet.")
+            print(ADDON_PREFIX .. " " .. dungeonData.dungeonName .. " — no talent recommendations for " .. specName .. " " .. className .. " yet.")
             return
         end
 
-        print(ADDON_PREFIX .. " Talents for " .. className .. " in " .. dungeonData.dungeonName .. ":")
+        print(ADDON_PREFIX .. " Talents for " .. specName .. " " .. className .. " in " .. dungeonData.dungeonName .. ":")
         for _, talent in ipairs(talents) do
             print("  • " .. talent)
         end

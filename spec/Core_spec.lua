@@ -14,17 +14,18 @@ describe("MPlusTalents", function()
         end)
     end)
 
-    describe("when entering a known dungeon with class data", function()
+    describe("when entering a known zone with spec data", function()
         before_each(function()
-            -- Dornogal (Khaz Algar, instanceID 2552) has Shaman data
             _G._instanceName = "Khaz Algar"
             _G._instanceType = "none"
             _G._instanceID = 2552
             _G._playerClass = "SHAMAN"
             _G._playerClassName = "Shaman"
+            _G._specIndex = 1
+            _G._specName = "Elemental"
         end)
 
-        it("prints talent recommendations for the player's class", function()
+        it("prints talent recommendations", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local output = addon.getPrinted()
             assert.is_true(#output > 0, "Expected talent output but got none")
@@ -34,6 +35,12 @@ describe("MPlusTalents", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local output = table.concat(addon.getPrinted(), "\n")
             assert.is_truthy(output:find("Dornogal"))
+        end)
+
+        it("includes the spec name in the output", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local output = table.concat(addon.getPrinted(), "\n")
+            assert.is_truthy(output:find("Elemental"))
         end)
 
         it("includes the class name in the output", function()
@@ -47,6 +54,26 @@ describe("MPlusTalents", function()
             local output = addon.getPrinted()
             -- Header line + at least one talent line
             assert.is_true(#output >= 2, "Expected header + talent lines")
+        end)
+    end)
+
+    describe("when the player has a different spec for the same dungeon", function()
+        before_each(function()
+            _G._instanceName = "Khaz Algar"
+            _G._instanceType = "none"
+            _G._instanceID = 2552
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 3
+            _G._specName = "Restoration"
+        end)
+
+        it("prints the talents for that spec, not another", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local output = table.concat(addon.getPrinted(), "\n")
+            assert.is_truthy(output:find("Restoration"))
+            -- Should NOT contain Elemental-only talents
+            assert.is_falsy(output:find("Stormkeeper"))
         end)
     end)
 
@@ -66,12 +93,31 @@ describe("MPlusTalents", function()
 
     describe("when in a known dungeon but no data for player class", function()
         before_each(function()
-            -- Magisters' Terrace (instanceID 2811), no class data yet
             _G._instanceName = "Magisters' Terrace"
             _G._instanceType = "party"
             _G._instanceID = 2811
             _G._playerClass = "DEMONHUNTER"
             _G._playerClassName = "Demon Hunter"
+            _G._specIndex = 1
+            _G._specName = "Havoc"
+        end)
+
+        it("prints a message saying no recommendations are available", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local output = table.concat(addon.getPrinted(), "\n")
+            assert.is_truthy(output:find("no talent recommendations"))
+        end)
+    end)
+
+    describe("when in a known dungeon with class data but not for current spec", function()
+        before_each(function()
+            _G._instanceName = "Khaz Algar"
+            _G._instanceType = "none"
+            _G._instanceID = 2552
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 2
+            _G._specName = "Enhancement"
         end)
 
         it("prints a message saying no recommendations are available", function()
