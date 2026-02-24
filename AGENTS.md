@@ -31,37 +31,23 @@ luarocks install busted
 2. Install LuaRocks from https://luarocks.org/
 3. Run: `luarocks install busted`
 
-## Running Tests
+## Tests
 
-From the repository root directory, run:
+Tests use [busted](https://lunarmodules.github.io/busted/) and live in `spec/`. Run them with:
 
 ```bash
 busted
 ```
 
-The tests are located in the `spec/` directory and use the busted testing framework with mocked WoW API functions.
+**Always run `busted` before writing any code** to establish a green baseline.
 
-**Always run the existing test suite before making any code changes.** This ensures you have a passing baseline and can detect if your changes introduce regressions.
+Follow red/green TDD:
 
-## Test Requirements
+1. **Red** - Write a failing test for the new behavior or bug
+2. **Green** - Write the minimum code to make it pass
+3. **Refactor** - Clean up while keeping tests green
 
-**Any code change requires corresponding tests and a passing test suite.**
-
-When modifying code:
-
-1. **Run `busted` first** to confirm the existing tests pass before writing any code
-2. **Add or update tests** for any new or changed behavior in `spec/Core_spec.lua`
-3. Run `busted` again to execute all tests
-4. Ensure all tests pass (exit code 0)
-5. If tests fail, fix the issues before committing
-
-When adding a new feature or fixing a bug:
-
-- Run the full test suite before starting work to establish a green baseline
-- Write tests that cover the new behavior or reproduce the bug before fixing it
-- Verify the new tests fail without the code change and pass with it
-
-The GitHub Actions workflow will automatically run tests on all pushes and pull requests. PRs with failing tests should not be merged.
+Never commit with failing tests. CI runs on all pushes and PRs.
 
 ## Git Workflow
 
