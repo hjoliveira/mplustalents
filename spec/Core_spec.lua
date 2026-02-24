@@ -25,35 +25,57 @@ describe("MPlusTalents", function()
             _G._specName = "Elemental"
         end)
 
-        it("prints talent recommendations", function()
+        it("shows the notification frame", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_not_nil(notif)
+            assert.is_true(notif._data.shown)
+        end)
+
+        it("sets the title with dungeon, spec and class", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            local title = notif._data.fontStrings[1]
+            assert.is_not_nil(title)
+            local text = title._data.text
+            assert.is_truthy(text:find("Dornogal"))
+            assert.is_truthy(text:find("Elemental"))
+            assert.is_truthy(text:find("Shaman"))
+        end)
+
+        it("creates a row for each talent with icon and name", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            -- 3 Elemental talents: Stormkeeper, Liquid Magma Totem, Ascendance
+            -- Each talent has an icon texture and a name font string
+            -- Title is fontStrings[1], talent names are fontStrings[2..4]
+            assert.is_true(#notif._data.fontStrings >= 4)
+            assert.are.equal("Stormkeeper", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Liquid Magma Totem", notif._data.fontStrings[3]._data.text)
+            assert.are.equal("Ascendance", notif._data.fontStrings[4]._data.text)
+        end)
+
+        it("sets an icon texture for each talent", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            -- 3 talent icons
+            assert.is_true(#notif._data.textures >= 3)
+            for i = 1, 3 do
+                assert.is_not_nil(notif._data.textures[i]._data.texture)
+            end
+        end)
+
+        it("schedules auto-hide", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local timers = addon.getTimers()
+            assert.is_true(#timers >= 1)
+            assert.is_true(timers[1].delay > 0)
+        end)
+
+        it("does not print to chat", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local output = addon.getPrinted()
-            assert.is_true(#output > 0, "Expected talent output but got none")
-        end)
-
-        it("includes the dungeon name in the output", function()
-            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
-            local output = table.concat(addon.getPrinted(), "\n")
-            assert.is_truthy(output:find("Dornogal"))
-        end)
-
-        it("includes the spec name in the output", function()
-            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
-            local output = table.concat(addon.getPrinted(), "\n")
-            assert.is_truthy(output:find("Elemental"))
-        end)
-
-        it("includes the class name in the output", function()
-            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
-            local output = table.concat(addon.getPrinted(), "\n")
-            assert.is_truthy(output:find("Shaman"))
-        end)
-
-        it("prints each talent on its own line", function()
-            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
-            local output = addon.getPrinted()
-            -- Header line + at least one talent line
-            assert.is_true(#output >= 2, "Expected header + talent lines")
+            assert.are.equal(0, #output)
         end)
     end)
 
@@ -68,12 +90,15 @@ describe("MPlusTalents", function()
             _G._specName = "Restoration"
         end)
 
-        it("prints the talents for that spec, not another", function()
+        it("shows the talents for that spec", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
-            local output = table.concat(addon.getPrinted(), "\n")
-            assert.is_truthy(output:find("Restoration"))
-            -- Should NOT contain Elemental-only talents
-            assert.is_falsy(output:find("Stormkeeper"))
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_true(notif._data.shown)
+            local title = notif._data.fontStrings[1]
+            assert.is_truthy(title._data.text:find("Restoration"))
+            -- 2 Restoration talents
+            assert.are.equal("Healing Tide Totem", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Ancestral Vigor", notif._data.fontStrings[3]._data.text)
         end)
     end)
 
@@ -82,6 +107,12 @@ describe("MPlusTalents", function()
             _G._instanceName = ""
             _G._instanceType = "none"
             _G._instanceID = 0
+        end)
+
+        it("does not show any notification", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_nil(notif)
         end)
 
         it("prints nothing", function()
@@ -102,7 +133,7 @@ describe("MPlusTalents", function()
             _G._specName = "Havoc"
         end)
 
-        it("prints a message saying no recommendations are available", function()
+        it("prints a fallback message to chat", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local output = table.concat(addon.getPrinted(), "\n")
             assert.is_truthy(output:find("no talent recommendations"))
@@ -120,7 +151,7 @@ describe("MPlusTalents", function()
             _G._specName = "Enhancement"
         end)
 
-        it("prints a message saying no recommendations are available", function()
+        it("prints a fallback message to chat", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local output = table.concat(addon.getPrinted(), "\n")
             assert.is_truthy(output:find("no talent recommendations"))
@@ -138,6 +169,25 @@ describe("MPlusTalents", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local output = addon.getPrinted()
             assert.are.equal(0, #output)
+        end)
+    end)
+
+    describe("auto-hide callback", function()
+        it("hides the notification frame when fired", function()
+            _G._instanceID = 2552
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 1
+            _G._specName = "Elemental"
+
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_true(notif._data.shown)
+
+            -- Fire the auto-hide callback
+            local timers = addon.getTimers()
+            timers[1].callback()
+            assert.is_false(notif._data.shown)
         end)
     end)
 end)

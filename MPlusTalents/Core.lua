@@ -2,6 +2,7 @@
 -- Edit the TALENT_DATA table below to configure recommendations per dungeon and class.
 
 local ADDON_PREFIX = "|cff00ccff[M+ Talents]|r"
+local DISPLAY_DURATION = 10
 
 -- Talent recommendations keyed by instanceID (Map.db2), then by class token,
 -- then by spec name. Each leaf entry is a list of talent names/notes.
@@ -70,6 +71,91 @@ local TALENT_DATA = {
     },
 }
 
+----------------------------------------------------------------
+-- Notification frame
+----------------------------------------------------------------
+
+local notifFrame = nil
+local talentRows = {}
+
+local function CreateNotificationFrame()
+    local f = CreateFrame("Frame", "MPlusTalentsNotification", UIParent, "BackdropTemplate")
+    f:SetSize(300, 100)
+    f:SetPoint("CENTER", UIParent, "CENTER", 0, 150)
+    f:SetBackdrop({
+        bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+        edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+        edgeSize = 16,
+        insets = { left = 4, right = 4, top = 4, bottom = 4 },
+    })
+    f:SetBackdropColor(0, 0, 0, 0.8)
+    f:SetFrameStrata("HIGH")
+    f:EnableMouse(true)
+    f:SetScript("OnMouseDown", function(self) self:Hide() end)
+    f:Hide()
+
+    f.title = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    f.title:SetPoint("TOP", f, "TOP", 0, -12)
+    f.title:SetWidth(270)
+
+    return f
+end
+
+local function ShowNotification(dungeonName, specName, className, talents)
+    if not notifFrame then
+        notifFrame = CreateNotificationFrame()
+    end
+
+    -- Hide previously visible talent rows
+    for _, row in ipairs(talentRows) do
+        row.icon:Hide()
+        row.text:Hide()
+    end
+
+    notifFrame.title:SetText(specName .. " " .. className .. " — " .. dungeonName)
+
+    local yOffset = -40
+    for i, talentName in ipairs(talents) do
+        local row = talentRows[i]
+        if not row then
+            row = {}
+            row.icon = notifFrame:CreateTexture(nil, "ARTWORK")
+            row.icon:SetSize(24, 24)
+            row.text = notifFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            talentRows[i] = row
+        end
+
+        row.icon:SetPoint("TOPLEFT", notifFrame, "TOPLEFT", 16, yOffset)
+        row.text:SetPoint("LEFT", row.icon, "RIGHT", 8, 0)
+
+        local iconID = 134400 -- default question mark
+        local spellInfo = C_Spell and C_Spell.GetSpellInfo and C_Spell.GetSpellInfo(talentName)
+        if spellInfo and spellInfo.iconID then
+            iconID = spellInfo.iconID
+        end
+        row.icon:SetTexture(iconID)
+        row.text:SetText(talentName)
+
+        row.icon:Show()
+        row.text:Show()
+
+        yOffset = yOffset - 30
+    end
+
+    notifFrame:SetSize(300, 50 + (#talents * 30))
+    notifFrame:Show()
+
+    C_Timer.After(DISPLAY_DURATION, function()
+        if notifFrame then
+            notifFrame:Hide()
+        end
+    end)
+end
+
+----------------------------------------------------------------
+-- Event handling
+----------------------------------------------------------------
+
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 
@@ -94,9 +180,6 @@ frame:SetScript("OnEvent", function(self, event, ...)
             return
         end
 
-        print(ADDON_PREFIX .. " Talents for " .. specName .. " " .. className .. " in " .. dungeonData.dungeonName .. ":")
-        for _, talent in ipairs(talents) do
-            print("  • " .. talent)
-        end
+        ShowNotification(dungeonData.dungeonName, specName, className, talents)
     end
 end)
