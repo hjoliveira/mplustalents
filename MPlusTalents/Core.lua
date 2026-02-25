@@ -2,7 +2,6 @@
 -- Edit the TALENT_DATA table below to configure recommendations per dungeon and class.
 
 local ADDON_PREFIX = "|cff00ccff[M+ Talents]|r"
-local DISPLAY_DURATION = 10
 
 -- Talent recommendations keyed by instanceID (Map.db2), then by class token,
 -- then by spec name. Each leaf entry is a list of talent names/notes.
@@ -91,12 +90,16 @@ local function CreateNotificationFrame()
     f:SetBackdropColor(0, 0, 0, 0.8)
     f:SetFrameStrata("HIGH")
     f:EnableMouse(true)
-    f:SetScript("OnMouseDown", function(self) self:Hide() end)
     f:Hide()
 
     f.title = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     f.title:SetPoint("TOP", f, "TOP", 0, -12)
     f.title:SetWidth(270)
+
+    local closeBtn = CreateFrame("Button", "MPlusTalentsCloseButton", f, "UIPanelCloseButton")
+    closeBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", -2, -2)
+    closeBtn:SetScript("OnClick", function() f:Hide() end)
+    f.closeButton = closeBtn
 
     return f
 end
@@ -144,12 +147,6 @@ local function ShowNotification(dungeonName, specName, className, talents)
 
     notifFrame:SetSize(300, 50 + (#talents * 30))
     notifFrame:Show()
-
-    C_Timer.After(DISPLAY_DURATION, function()
-        if notifFrame then
-            notifFrame:Hide()
-        end
-    end)
 end
 
 ----------------------------------------------------------------

@@ -9,7 +9,7 @@ local printed = {}
 -- Unknown methods become noops via __index. Tracked methods store state.
 local function createMockWidget()
     local data = {
-        shown = false,
+        shown = true,
         text = nil,
         texture = nil,
         fontStrings = {},

@@ -65,11 +65,27 @@ describe("MPlusTalents", function()
             end
         end)
 
-        it("schedules auto-hide", function()
+        it("does not schedule an auto-hide timer", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local timers = addon.getTimers()
-            assert.is_true(#timers >= 1)
-            assert.is_true(timers[1].delay > 0)
+            assert.are.equal(0, #timers)
+        end)
+
+        it("creates a close button", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local closeBtn = addon.getFrame("MPlusTalentsCloseButton")
+            assert.is_not_nil(closeBtn)
+            assert.is_true(closeBtn._data.shown)
+        end)
+
+        it("hides the notification when the close button is clicked", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            local closeBtn = addon.getFrame("MPlusTalentsCloseButton")
+            assert.is_true(notif._data.shown)
+            -- Simulate clicking the close button
+            closeBtn._data.scripts["OnClick"](closeBtn)
+            assert.is_false(notif._data.shown)
         end)
 
         it("does not print to chat", function()
@@ -172,21 +188,22 @@ describe("MPlusTalents", function()
         end)
     end)
 
-    describe("auto-hide callback", function()
-        it("hides the notification frame when fired", function()
+    describe("close button", function()
+        before_each(function()
             _G._instanceID = 2552
             _G._playerClass = "SHAMAN"
             _G._playerClassName = "Shaman"
             _G._specIndex = 1
             _G._specName = "Elemental"
+        end)
 
+        it("hides the notification when clicked", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local notif = addon.getFrame("MPlusTalentsNotification")
+            local closeBtn = addon.getFrame("MPlusTalentsCloseButton")
             assert.is_true(notif._data.shown)
 
-            -- Fire the auto-hide callback
-            local timers = addon.getTimers()
-            timers[1].callback()
+            closeBtn._data.scripts["OnClick"](closeBtn)
             assert.is_false(notif._data.shown)
         end)
     end)
