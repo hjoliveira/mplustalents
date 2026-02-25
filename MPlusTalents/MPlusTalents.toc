@@ -1,4 +1,4 @@
-## Interface: 110100
+## Interface: 120001
 ## Title: M+ Talents
 ## Notes: Shows talent recommendations when entering Midnight season 1 dungeons
 ## Author: MPlusTalents
