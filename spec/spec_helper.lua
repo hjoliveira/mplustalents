@@ -12,6 +12,8 @@ local function createMockWidget()
         shown = true,
         text = nil,
         texture = nil,
+        movable = false,
+        registeredForDrag = nil,
         fontStrings = {},
         textures = {},
         scripts = {},
@@ -29,6 +31,8 @@ local function createMockWidget()
     widget.SetText = function(self, text) data.text = text end
     widget.GetText = function(self) return data.text end
     widget.SetTexture = function(self, tex) data.texture = tex end
+    widget.SetMovable = function(self, movable) data.movable = movable end
+    widget.RegisterForDrag = function(self, button) data.registeredForDrag = button end
     widget.SetScript = function(self, scriptType, handler)
         data.scripts[scriptType] = handler
     end

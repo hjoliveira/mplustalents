@@ -188,6 +188,35 @@ describe("MPlusTalents", function()
         end)
     end)
 
+    describe("draggable frame", function()
+        before_each(function()
+            _G._instanceID = 2552
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 1
+            _G._specName = "Elemental"
+        end)
+
+        it("is movable and registered for left-button drag", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_true(notif._data.movable)
+            assert.are.equal("LeftButton", notif._data.registeredForDrag)
+        end)
+
+        it("starts dragging on mouse down", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_not_nil(notif._data.scripts["OnDragStart"])
+        end)
+
+        it("stops dragging on mouse up", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_not_nil(notif._data.scripts["OnDragStop"])
+        end)
+    end)
+
     describe("close button", function()
         before_each(function()
             _G._instanceID = 2552
