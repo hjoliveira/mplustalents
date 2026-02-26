@@ -11,7 +11,19 @@ local TALENT_DATA = {
     -- Magisters' Terrace (Midnight)
     [2811] = {
         dungeonName = "Magisters' Terrace",
-        classes = {},
+        classes = {
+            ["SHAMAN"] = {
+                ["Elemental"] = {
+                    "Stormkeeper",
+                    "Liquid Magma Totem",
+                    "Ascendance",
+                },
+                ["Restoration"] = {
+                    "Healing Tide Totem",
+                    "Ancestral Vigor",
+                },
+            },
+        },
     },
     -- Windrunner Spire (Midnight)
     [2805] = {
@@ -49,25 +61,6 @@ local TALENT_DATA = {
         classes = {},
     },
 
-    ---- Test Zones ----
-
-    -- Dornogal (Khaz Algar continent, instanceID 2552)
-    [2552] = {
-        dungeonName = "Dornogal",
-        classes = {
-            ["SHAMAN"] = {
-                ["Elemental"] = {
-                    "Stormkeeper",
-                    "Liquid Magma Totem",
-                    "Ascendance",
-                },
-                ["Restoration"] = {
-                    "Healing Tide Totem",
-                    "Ancestral Vigor",
-                },
-            },
-        },
-    },
 }
 
 ----------------------------------------------------------------

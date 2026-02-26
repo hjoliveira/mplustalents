@@ -16,9 +16,9 @@ describe("MPlusTalents", function()
 
     describe("when entering a known zone with spec data", function()
         before_each(function()
-            _G._instanceName = "Khaz Algar"
-            _G._instanceType = "none"
-            _G._instanceID = 2552
+            _G._instanceName = "Magisters' Terrace"
+            _G._instanceType = "party"
+            _G._instanceID = 2811
             _G._playerClass = "SHAMAN"
             _G._playerClassName = "Shaman"
             _G._specIndex = 1
@@ -38,7 +38,7 @@ describe("MPlusTalents", function()
             local title = notif._data.fontStrings[1]
             assert.is_not_nil(title)
             local text = title._data.text
-            assert.is_truthy(text:find("Dornogal"))
+            assert.is_truthy(text:find("Magisters' Terrace"))
             assert.is_truthy(text:find("Elemental"))
             assert.is_truthy(text:find("Shaman"))
         end)
@@ -97,9 +97,9 @@ describe("MPlusTalents", function()
 
     describe("when the player has a different spec for the same dungeon", function()
         before_each(function()
-            _G._instanceName = "Khaz Algar"
-            _G._instanceType = "none"
-            _G._instanceID = 2552
+            _G._instanceName = "Magisters' Terrace"
+            _G._instanceType = "party"
+            _G._instanceID = 2811
             _G._playerClass = "SHAMAN"
             _G._playerClassName = "Shaman"
             _G._specIndex = 3
@@ -158,9 +158,9 @@ describe("MPlusTalents", function()
 
     describe("when in a known dungeon with class data but not for current spec", function()
         before_each(function()
-            _G._instanceName = "Khaz Algar"
-            _G._instanceType = "none"
-            _G._instanceID = 2552
+            _G._instanceName = "Magisters' Terrace"
+            _G._instanceType = "party"
+            _G._instanceID = 2811
             _G._playerClass = "SHAMAN"
             _G._playerClassName = "Shaman"
             _G._specIndex = 2
@@ -190,7 +190,7 @@ describe("MPlusTalents", function()
 
     describe("draggable frame", function()
         before_each(function()
-            _G._instanceID = 2552
+            _G._instanceID = 2811
             _G._playerClass = "SHAMAN"
             _G._playerClassName = "Shaman"
             _G._specIndex = 1
@@ -219,7 +219,7 @@ describe("MPlusTalents", function()
 
     describe("close button", function()
         before_each(function()
-            _G._instanceID = 2552
+            _G._instanceID = 2811
             _G._playerClass = "SHAMAN"
             _G._playerClassName = "Shaman"
             _G._specIndex = 1
