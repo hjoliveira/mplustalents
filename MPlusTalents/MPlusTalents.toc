@@ -2,6 +2,6 @@
 ## Title: M+ Talents
 ## Notes: Shows talent recommendations when entering Midnight season 1 dungeons
 ## Author: MPlusTalents
-## Version: 0.1.0
+## Version: 0.2.0
 
 Core.lua
