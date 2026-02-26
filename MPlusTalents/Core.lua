@@ -4,8 +4,7 @@
 local ADDON_PREFIX = "|cff00ccff[M+ Talents]|r"
 
 -- Talent recommendations keyed by instanceID (Map.db2), then by class token,
--- then by spec name. Each spec entry has a `default` list and an optional
--- `affixes` table keyed by affix name for week-specific overrides.
+-- then by spec name. Each leaf entry is a plain list of talent names/notes.
 local TALENT_DATA = {
     ---- Midnight Season 1 Dungeons ----
 
@@ -15,24 +14,13 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    default = {
-                        "Stormkeeper",
-                        "Liquid Magma Totem",
-                        "Ascendance",
-                    },
-                    affixes = {
-                        ["Fortified"] = {
-                            "Storm Elemental",
-                            "Stormkeeper",
-                            "Ascendance",
-                        },
-                    },
+                    "Stormkeeper",
+                    "Liquid Magma Totem",
+                    "Ascendance",
                 },
                 ["Restoration"] = {
-                    default = {
-                        "Healing Tide Totem",
-                        "Ancestral Vigor",
-                    },
+                    "Healing Tide Totem",
+                    "Ancestral Vigor",
                 },
             },
         },
@@ -75,6 +63,21 @@ local TALENT_DATA = {
 
 }
 
+-- Weekly-affix talent overrides keyed by class token, then spec name, then affix name.
+-- When a matching affix is active this list is shown instead of the dungeon default.
+-- These apply across all dungeons.
+local AFFIX_TALENT_DATA = {
+    ["SHAMAN"] = {
+        ["Elemental"] = {
+            ["Fortified"] = {
+                "Storm Elemental",
+                "Stormkeeper",
+                "Ascendance",
+            },
+        },
+    },
+}
+
 ----------------------------------------------------------------
 -- Affix helpers
 ----------------------------------------------------------------
@@ -99,16 +102,18 @@ local function GetCurrentAffixNames()
 end
 
 -- Returns the talent list and matched affix name (or nil) for the given
--- spec data table and list of active affix names.
-local function SelectTalents(specData, affixNames)
-    if specData.affixes then
+-- class/spec and list of active affix names, checking AFFIX_TALENT_DATA
+-- first and falling back to the dungeon-specific default list.
+local function SelectTalents(dungeonTalents, classToken, specName, affixNames)
+    local affixSpecData = AFFIX_TALENT_DATA[classToken] and AFFIX_TALENT_DATA[classToken][specName]
+    if affixSpecData then
         for _, affixName in ipairs(affixNames) do
-            if specData.affixes[affixName] then
-                return specData.affixes[affixName], affixName
+            if affixSpecData[affixName] then
+                return affixSpecData[affixName], affixName
             end
         end
     end
-    return specData.default, nil
+    return dungeonTalents, nil
 end
 
 ----------------------------------------------------------------
@@ -219,20 +224,15 @@ frame:SetScript("OnEvent", function(self, event, ...)
         local _, specName = GetSpecializationInfo(specIndex)
 
         local classData = dungeonData.classes[classToken]
-        local specData = classData and classData[specName]
+        local dungeonTalents = classData and classData[specName]
 
-        if not specData then
+        if not dungeonTalents or #dungeonTalents == 0 then
             print(ADDON_PREFIX .. " " .. dungeonData.dungeonName .. " — no talent recommendations for " .. specName .. " " .. className .. " yet.")
             return
         end
 
         local affixNames = GetCurrentAffixNames()
-        local talents, matchedAffix = SelectTalents(specData, affixNames)
-
-        if not talents or #talents == 0 then
-            print(ADDON_PREFIX .. " " .. dungeonData.dungeonName .. " — no talent recommendations for " .. specName .. " " .. className .. " yet.")
-            return
-        end
+        local talents, matchedAffix = SelectTalents(dungeonTalents, classToken, specName, affixNames)
 
         ShowNotification(dungeonData.dungeonName, specName, className, talents, matchedAffix)
     end
