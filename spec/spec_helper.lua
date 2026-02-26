@@ -80,6 +80,10 @@ local function resetMocks()
     _G._instanceGroupSize = 0
     _G._lfgDungeonID = 0
 
+    -- M+ affix defaults (no active affixes)
+    _G._currentAffixes = {}
+    _G._affixInfoByID = {}
+
     -- Player class defaults
     _G._playerClass = "WARRIOR"
     _G._playerClassName = "Warrior"
@@ -132,6 +136,24 @@ local function resetMocks()
     _G.GetSpecializationInfo = function(specIndex)
         return nil, _G._specName
     end
+
+    -- C_MythicPlus mock
+    _G.C_MythicPlus = {
+        GetCurrentAffixes = function()
+            return _G._currentAffixes
+        end,
+    }
+
+    -- C_ChallengeMode mock
+    _G.C_ChallengeMode = {
+        GetAffixInfo = function(affixID)
+            local info = _G._affixInfoByID and _G._affixInfoByID[affixID]
+            if info then
+                return info.name, info.description, info.fileDataID
+            end
+            return nil
+        end,
+    }
 
     -- C_Spell mock
     _G.C_Spell = {
