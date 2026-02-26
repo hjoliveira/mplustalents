@@ -16,9 +16,9 @@ describe("MPlusTalents", function()
 
     describe("when entering a known zone with spec data", function()
         before_each(function()
-            _G._instanceName = "Khaz Algar"
-            _G._instanceType = "none"
-            _G._instanceID = 2552
+            _G._instanceName = "Magisters' Terrace"
+            _G._instanceType = "party"
+            _G._instanceID = 2811
             _G._playerClass = "SHAMAN"
             _G._playerClassName = "Shaman"
             _G._specIndex = 1
@@ -38,7 +38,7 @@ describe("MPlusTalents", function()
             local title = notif._data.fontStrings[1]
             assert.is_not_nil(title)
             local text = title._data.text
-            assert.is_truthy(text:find("Dornogal"))
+            assert.is_truthy(text:find("Magisters' Terrace"))
             assert.is_truthy(text:find("Elemental"))
             assert.is_truthy(text:find("Shaman"))
         end)
@@ -97,9 +97,9 @@ describe("MPlusTalents", function()
 
     describe("when the player has a different spec for the same dungeon", function()
         before_each(function()
-            _G._instanceName = "Khaz Algar"
-            _G._instanceType = "none"
-            _G._instanceID = 2552
+            _G._instanceName = "Magisters' Terrace"
+            _G._instanceType = "party"
+            _G._instanceID = 2811
             _G._playerClass = "SHAMAN"
             _G._playerClassName = "Shaman"
             _G._specIndex = 3
@@ -158,9 +158,9 @@ describe("MPlusTalents", function()
 
     describe("when in a known dungeon with class data but not for current spec", function()
         before_each(function()
-            _G._instanceName = "Khaz Algar"
-            _G._instanceType = "none"
-            _G._instanceID = 2552
+            _G._instanceName = "Magisters' Terrace"
+            _G._instanceType = "party"
+            _G._instanceID = 2811
             _G._playerClass = "SHAMAN"
             _G._playerClassName = "Shaman"
             _G._specIndex = 2
@@ -190,7 +190,7 @@ describe("MPlusTalents", function()
 
     describe("draggable frame", function()
         before_each(function()
-            _G._instanceID = 2552
+            _G._instanceID = 2811
             _G._playerClass = "SHAMAN"
             _G._playerClassName = "Shaman"
             _G._specIndex = 1
@@ -217,9 +217,81 @@ describe("MPlusTalents", function()
         end)
     end)
 
+    describe("when weekly affix has specific recommendations", function()
+        before_each(function()
+            _G._instanceID = 2811
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 1
+            _G._specName = "Elemental"
+            _G._currentAffixes = { { id = 10 } }
+            _G._affixInfoByID = { [10] = { name = "Fortified" } }
+        end)
+
+        it("shows the affix-specific talent list", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_true(notif._data.shown)
+            assert.are.equal("Storm Elemental", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Stormkeeper",     notif._data.fontStrings[3]._data.text)
+            assert.are.equal("Ascendance",      notif._data.fontStrings[4]._data.text)
+        end)
+
+        it("includes the matched affix name in the title", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_truthy(notif._data.fontStrings[1]._data.text:find("Fortified"))
+        end)
+    end)
+
+    describe("when weekly affix has no specific recommendations", function()
+        before_each(function()
+            _G._instanceID = 2811
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 1
+            _G._specName = "Elemental"
+            _G._currentAffixes = { { id = 11 } }
+            _G._affixInfoByID = { [11] = { name = "Tyrannical" } }
+        end)
+
+        it("falls back to the default talent list", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_true(notif._data.shown)
+            assert.are.equal("Stormkeeper",        notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Liquid Magma Totem", notif._data.fontStrings[3]._data.text)
+            assert.are.equal("Ascendance",         notif._data.fontStrings[4]._data.text)
+        end)
+
+        it("does not include the affix name in the title", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_falsy(notif._data.fontStrings[1]._data.text:find("Tyrannical"))
+        end)
+    end)
+
+    describe("when the M+ affix API is unavailable", function()
+        before_each(function()
+            _G._instanceID = 2811
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 1
+            _G._specName = "Elemental"
+            _G.C_MythicPlus = nil
+        end)
+
+        it("shows default talents without error", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_true(notif._data.shown)
+            assert.are.equal("Stormkeeper", notif._data.fontStrings[2]._data.text)
+        end)
+    end)
+
     describe("close button", function()
         before_each(function()
-            _G._instanceID = 2552
+            _G._instanceID = 2811
             _G._playerClass = "SHAMAN"
             _G._playerClassName = "Shaman"
             _G._specIndex = 1

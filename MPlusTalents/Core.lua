@@ -4,14 +4,26 @@
 local ADDON_PREFIX = "|cff00ccff[M+ Talents]|r"
 
 -- Talent recommendations keyed by instanceID (Map.db2), then by class token,
--- then by spec name. Each leaf entry is a list of talent names/notes.
+-- then by spec name. Each leaf entry is a plain list of talent names/notes.
 local TALENT_DATA = {
     ---- Midnight Season 1 Dungeons ----
 
     -- Magisters' Terrace (Midnight)
     [2811] = {
         dungeonName = "Magisters' Terrace",
-        classes = {},
+        classes = {
+            ["SHAMAN"] = {
+                ["Elemental"] = {
+                    "Stormkeeper",
+                    "Liquid Magma Totem",
+                    "Ascendance",
+                },
+                ["Restoration"] = {
+                    "Healing Tide Totem",
+                    "Ancestral Vigor",
+                },
+            },
+        },
     },
     -- Windrunner Spire (Midnight)
     [2805] = {
@@ -49,26 +61,60 @@ local TALENT_DATA = {
         classes = {},
     },
 
-    ---- Test Zones ----
+}
 
-    -- Dornogal (Khaz Algar continent, instanceID 2552)
-    [2552] = {
-        dungeonName = "Dornogal",
-        classes = {
-            ["SHAMAN"] = {
-                ["Elemental"] = {
-                    "Stormkeeper",
-                    "Liquid Magma Totem",
-                    "Ascendance",
-                },
-                ["Restoration"] = {
-                    "Healing Tide Totem",
-                    "Ancestral Vigor",
-                },
+-- Weekly-affix talent overrides keyed by class token, then spec name, then affix name.
+-- When a matching affix is active this list is shown instead of the dungeon default.
+-- These apply across all dungeons.
+local AFFIX_TALENT_DATA = {
+    ["SHAMAN"] = {
+        ["Elemental"] = {
+            ["Fortified"] = {
+                "Storm Elemental",
+                "Stormkeeper",
+                "Ascendance",
             },
         },
     },
 }
+
+----------------------------------------------------------------
+-- Affix helpers
+----------------------------------------------------------------
+
+-- Returns the names of all active M+ affixes this week, in order.
+local function GetCurrentAffixNames()
+    if not C_MythicPlus or not C_MythicPlus.GetCurrentAffixes then
+        return {}
+    end
+    local affixes = C_MythicPlus.GetCurrentAffixes()
+    if not affixes then return {} end
+    local names = {}
+    for _, affixInfo in ipairs(affixes) do
+        if C_ChallengeMode and C_ChallengeMode.GetAffixInfo then
+            local name = C_ChallengeMode.GetAffixInfo(affixInfo.id)
+            if name then
+                table.insert(names, name)
+            end
+        end
+    end
+    return names
+end
+
+-- Returns the talent list and matched affix name (or nil) for the given
+-- class/spec and list of active affix names, checking AFFIX_TALENT_DATA
+-- first and falling back to the dungeon-specific default list.
+local function SelectTalents(dungeonTalents, classToken, specName, affixNames)
+    local affixSpecData = AFFIX_TALENT_DATA[classToken] and AFFIX_TALENT_DATA[classToken][specName]
+    if affixSpecData then
+        for _, affixName in ipairs(affixNames) do
+            if affixSpecData[affixName] then
+                return affixSpecData[affixName], affixName
+            end
+        end
+    end
+    return dungeonTalents, nil
+end
 
 ----------------------------------------------------------------
 -- Notification frame
@@ -108,7 +154,7 @@ local function CreateNotificationFrame()
     return f
 end
 
-local function ShowNotification(dungeonName, specName, className, talents)
+local function ShowNotification(dungeonName, specName, className, talents, affixName)
     if not notifFrame then
         notifFrame = CreateNotificationFrame()
     end
@@ -119,7 +165,11 @@ local function ShowNotification(dungeonName, specName, className, talents)
         row.text:Hide()
     end
 
-    notifFrame.title:SetText(specName .. " " .. className .. " — " .. dungeonName)
+    local title = specName .. " " .. className .. " — " .. dungeonName
+    if affixName then
+        title = title .. " (" .. affixName .. ")"
+    end
+    notifFrame.title:SetText(title)
 
     local yOffset = -40
     for i, talentName in ipairs(talents) do
@@ -174,13 +224,16 @@ frame:SetScript("OnEvent", function(self, event, ...)
         local _, specName = GetSpecializationInfo(specIndex)
 
         local classData = dungeonData.classes[classToken]
-        local talents = classData and classData[specName]
+        local dungeonTalents = classData and classData[specName]
 
-        if not talents or #talents == 0 then
+        if not dungeonTalents or #dungeonTalents == 0 then
             print(ADDON_PREFIX .. " " .. dungeonData.dungeonName .. " — no talent recommendations for " .. specName .. " " .. className .. " yet.")
             return
         end
 
-        ShowNotification(dungeonData.dungeonName, specName, className, talents)
+        local affixNames = GetCurrentAffixNames()
+        local talents, matchedAffix = SelectTalents(dungeonTalents, classToken, specName, affixNames)
+
+        ShowNotification(dungeonData.dungeonName, specName, className, talents, matchedAffix)
     end
 end)
