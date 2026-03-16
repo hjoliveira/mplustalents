@@ -17,9 +17,6 @@ local TALENT_DATA = {
                     "Tremor Totem (nice to have)",
                     "Purge",
                     "Spirit Walk (nice to have)",
-                    "Stormkeeper",
-                    "Liquid Magma Totem",
-                    "Ascendance",
                 },
                 ["Enhancement"] = {
                     "Tremor Totem (nice to have)",
@@ -30,8 +27,6 @@ local TALENT_DATA = {
                     "Tremor Totem (nice to have)",
                     "Purge",
                     "Spirit Walk (nice to have)",
-                    "Healing Tide Totem",
-                    "Ancestral Vigor",
                 },
             },
         },
@@ -195,15 +190,6 @@ local TALENT_DATA = {
 -- When a matching affix is active this list is shown instead of the dungeon default.
 -- These apply across all dungeons.
 local AFFIX_TALENT_DATA = {
-    ["SHAMAN"] = {
-        ["Elemental"] = {
-            ["Fortified"] = {
-                "Storm Elemental",
-                "Stormkeeper",
-                "Ascendance",
-            },
-        },
-    },
 }
 
 ----------------------------------------------------------------

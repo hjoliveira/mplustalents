@@ -46,23 +46,20 @@ describe("MPlusTalents", function()
         it("creates a row for each talent with icon and name", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local notif = addon.getFrame("MPlusTalentsNotification")
-            -- 6 Elemental talents: utility + spec-specific
-            -- Title is fontStrings[1], talent names are fontStrings[2..7]
-            assert.is_true(#notif._data.fontStrings >= 7)
+            -- 3 Elemental talents from utility table
+            -- Title is fontStrings[1], talent names are fontStrings[2..4]
+            assert.is_true(#notif._data.fontStrings >= 4)
             assert.are.equal("Tremor Totem (nice to have)", notif._data.fontStrings[2]._data.text)
             assert.are.equal("Purge", notif._data.fontStrings[3]._data.text)
             assert.are.equal("Spirit Walk (nice to have)", notif._data.fontStrings[4]._data.text)
-            assert.are.equal("Stormkeeper", notif._data.fontStrings[5]._data.text)
-            assert.are.equal("Liquid Magma Totem", notif._data.fontStrings[6]._data.text)
-            assert.are.equal("Ascendance", notif._data.fontStrings[7]._data.text)
         end)
 
         it("sets an icon texture for each talent", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local notif = addon.getFrame("MPlusTalentsNotification")
-            -- 6 talent icons
-            assert.is_true(#notif._data.textures >= 6)
-            for i = 1, 6 do
+            -- 3 talent icons
+            assert.is_true(#notif._data.textures >= 3)
+            for i = 1, 3 do
                 assert.is_not_nil(notif._data.textures[i]._data.texture)
             end
         end)
@@ -114,12 +111,10 @@ describe("MPlusTalents", function()
             assert.is_true(notif._data.shown)
             local title = notif._data.fontStrings[1]
             assert.is_truthy(title._data.text:find("Restoration"))
-            -- 5 Restoration talents: utility + spec-specific
+            -- 3 Restoration talents from utility table
             assert.are.equal("Tremor Totem (nice to have)", notif._data.fontStrings[2]._data.text)
             assert.are.equal("Purge", notif._data.fontStrings[3]._data.text)
             assert.are.equal("Spirit Walk (nice to have)", notif._data.fontStrings[4]._data.text)
-            assert.are.equal("Healing Tide Totem", notif._data.fontStrings[5]._data.text)
-            assert.are.equal("Ancestral Vigor", notif._data.fontStrings[6]._data.text)
         end)
     end)
 
@@ -225,7 +220,7 @@ describe("MPlusTalents", function()
         end)
     end)
 
-    describe("when weekly affix has specific recommendations", function()
+    describe("when weekly affix is active but no affix overrides exist", function()
         before_each(function()
             _G._instanceID = 2811
             _G._playerClass = "SHAMAN"
@@ -236,49 +231,19 @@ describe("MPlusTalents", function()
             _G._affixInfoByID = { [10] = { name = "Fortified" } }
         end)
 
-        it("shows the affix-specific talent list", function()
-            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
-            local notif = addon.getFrame("MPlusTalentsNotification")
-            assert.is_true(notif._data.shown)
-            assert.are.equal("Storm Elemental", notif._data.fontStrings[2]._data.text)
-            assert.are.equal("Stormkeeper",     notif._data.fontStrings[3]._data.text)
-            assert.are.equal("Ascendance",      notif._data.fontStrings[4]._data.text)
-        end)
-
-        it("includes the matched affix name in the title", function()
-            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
-            local notif = addon.getFrame("MPlusTalentsNotification")
-            assert.is_truthy(notif._data.fontStrings[1]._data.text:find("Fortified"))
-        end)
-    end)
-
-    describe("when weekly affix has no specific recommendations", function()
-        before_each(function()
-            _G._instanceID = 2811
-            _G._playerClass = "SHAMAN"
-            _G._playerClassName = "Shaman"
-            _G._specIndex = 1
-            _G._specName = "Elemental"
-            _G._currentAffixes = { { id = 11 } }
-            _G._affixInfoByID = { [11] = { name = "Tyrannical" } }
-        end)
-
         it("falls back to the default talent list", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local notif = addon.getFrame("MPlusTalentsNotification")
             assert.is_true(notif._data.shown)
-            assert.are.equal("Tremor Totem (nice to have)",  notif._data.fontStrings[2]._data.text)
-            assert.are.equal("Purge",                        notif._data.fontStrings[3]._data.text)
-            assert.are.equal("Spirit Walk (nice to have)",   notif._data.fontStrings[4]._data.text)
-            assert.are.equal("Stormkeeper",                  notif._data.fontStrings[5]._data.text)
-            assert.are.equal("Liquid Magma Totem",           notif._data.fontStrings[6]._data.text)
-            assert.are.equal("Ascendance",                   notif._data.fontStrings[7]._data.text)
+            assert.are.equal("Tremor Totem (nice to have)", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Purge",                       notif._data.fontStrings[3]._data.text)
+            assert.are.equal("Spirit Walk (nice to have)",  notif._data.fontStrings[4]._data.text)
         end)
 
         it("does not include the affix name in the title", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local notif = addon.getFrame("MPlusTalentsNotification")
-            assert.is_falsy(notif._data.fontStrings[1]._data.text:find("Tyrannical"))
+            assert.is_falsy(notif._data.fontStrings[1]._data.text:find("Fortified"))
         end)
     end)
 
