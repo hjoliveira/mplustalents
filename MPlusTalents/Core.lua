@@ -14,11 +14,22 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
+                    "Thunderstorm (nice to have)",
+                    "Tremor Totem",
+                    "Hex (nice to have)",
                     "Stormkeeper",
                     "Liquid Magma Totem",
                     "Ascendance",
                 },
+                ["Enhancement"] = {
+                    "Thunderstorm (nice to have)",
+                    "Tremor Totem",
+                    "Hex (nice to have)",
+                },
                 ["Restoration"] = {
+                    "Thunderstorm (nice to have)",
+                    "Tremor Totem",
+                    "Hex (nice to have)",
                     "Healing Tide Totem",
                     "Ancestral Vigor",
                 },
@@ -28,37 +39,157 @@ local TALENT_DATA = {
     -- Windrunner Spire (Midnight)
     [2805] = {
         dungeonName = "Windrunner Spire",
-        classes = {},
+        classes = {
+            ["SHAMAN"] = {
+                ["Elemental"] = {
+                    "Ancestral Guidance",
+                    "Tremor Totem",
+                    "Poison Cleansing Totem",
+                },
+                ["Enhancement"] = {
+                    "Ancestral Guidance",
+                    "Tremor Totem",
+                    "Poison Cleansing Totem",
+                },
+                ["Restoration"] = {
+                    "Ancestral Guidance",
+                    "Tremor Totem",
+                    "Poison Cleansing Totem",
+                },
+            },
+        },
     },
     -- Maisara Caverns (Midnight)
     [2874] = {
         dungeonName = "Maisara Caverns",
-        classes = {},
+        classes = {
+            ["SHAMAN"] = {
+                ["Elemental"] = {
+                    "Tremor Totem",
+                    "Purge",
+                    "Earthgrab Totem",
+                },
+                ["Enhancement"] = {
+                    "Tremor Totem",
+                    "Purge",
+                    "Earthgrab Totem",
+                },
+                ["Restoration"] = {
+                    "Tremor Totem",
+                    "Purge",
+                    "Earthgrab Totem",
+                },
+            },
+        },
     },
     -- Nexus-Point Xenas (Midnight)
     [2915] = {
         dungeonName = "Nexus-Point Xenas",
-        classes = {},
+        classes = {
+            ["SHAMAN"] = {
+                ["Elemental"] = {
+                    "Ancestral Guidance",
+                    "Tremor Totem",
+                    "Hex (nice to have)",
+                },
+                ["Enhancement"] = {
+                    "Ancestral Guidance",
+                    "Tremor Totem",
+                    "Hex (nice to have)",
+                },
+                ["Restoration"] = {
+                    "Ancestral Guidance",
+                    "Tremor Totem",
+                    "Hex (nice to have)",
+                },
+            },
+        },
     },
     -- Algeth'ar Academy (Dragonflight)
     [2526] = {
         dungeonName = "Algeth'ar Academy",
-        classes = {},
+        classes = {
+            ["SHAMAN"] = {
+                ["Elemental"] = {
+                    "Tremor Totem",
+                    "Poison Cleansing Totem",
+                },
+                ["Enhancement"] = {
+                    "Tremor Totem",
+                    "Poison Cleansing Totem",
+                },
+                ["Restoration"] = {
+                    "Tremor Totem",
+                    "Poison Cleansing Totem",
+                },
+            },
+        },
     },
     -- Seat of the Triumvirate (Legion)
     [1753] = {
         dungeonName = "Seat of the Triumvirate",
-        classes = {},
+        classes = {
+            ["SHAMAN"] = {
+                ["Elemental"] = {
+                    "Tremor Totem (nice to have)",
+                    "Poison Cleansing Totem",
+                    "Hex",
+                },
+                ["Enhancement"] = {
+                    "Tremor Totem (nice to have)",
+                    "Poison Cleansing Totem",
+                    "Hex",
+                },
+                ["Restoration"] = {
+                    "Tremor Totem (nice to have)",
+                    "Poison Cleansing Totem",
+                    "Hex",
+                },
+            },
+        },
     },
     -- Skyreach (Warlords of Draenor)
     [1209] = {
         dungeonName = "Skyreach",
-        classes = {},
+        classes = {
+            ["SHAMAN"] = {
+                ["Elemental"] = {
+                    "Tremor Totem",
+                    "Poison Cleansing Totem",
+                    "Wind Rush Totem",
+                },
+                ["Enhancement"] = {
+                    "Tremor Totem",
+                    "Poison Cleansing Totem",
+                    "Wind Rush Totem",
+                },
+                ["Restoration"] = {
+                    "Tremor Totem",
+                    "Poison Cleansing Totem",
+                    "Wind Rush Totem",
+                },
+            },
+        },
     },
     -- Pit of Saron (Wrath of the Lich King)
     [658] = {
         dungeonName = "Pit of Saron",
-        classes = {},
+        classes = {
+            ["SHAMAN"] = {
+                ["Elemental"] = {
+                    "Tremor Totem",
+                    "Hex (nice to have)",
+                },
+                ["Enhancement"] = {
+                    "Tremor Totem",
+                    "Hex (nice to have)",
+                },
+                ["Restoration"] = {
+                    "Tremor Totem",
+                    "Hex (nice to have)",
+                },
+            },
+        },
     },
 
 }
