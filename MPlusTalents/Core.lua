@@ -14,22 +14,22 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    "Thunderstorm (nice to have)",
-                    "Tremor Totem",
-                    "Hex (nice to have)",
+                    "Tremor Totem (nice to have)",
+                    "Purge",
+                    "Spirit Walk (nice to have)",
                     "Stormkeeper",
                     "Liquid Magma Totem",
                     "Ascendance",
                 },
                 ["Enhancement"] = {
-                    "Thunderstorm (nice to have)",
-                    "Tremor Totem",
-                    "Hex (nice to have)",
+                    "Tremor Totem (nice to have)",
+                    "Purge",
+                    "Spirit Walk (nice to have)",
                 },
                 ["Restoration"] = {
-                    "Thunderstorm (nice to have)",
-                    "Tremor Totem",
-                    "Hex (nice to have)",
+                    "Tremor Totem (nice to have)",
+                    "Purge",
+                    "Spirit Walk (nice to have)",
                     "Healing Tide Totem",
                     "Ancestral Vigor",
                 },
@@ -42,18 +42,18 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    "Ancestral Guidance",
-                    "Tremor Totem",
+                    "Cleanse Spirit",
+                    "Purge",
                     "Poison Cleansing Totem",
                 },
                 ["Enhancement"] = {
-                    "Ancestral Guidance",
-                    "Tremor Totem",
+                    "Cleanse Spirit",
+                    "Purge",
                     "Poison Cleansing Totem",
                 },
                 ["Restoration"] = {
-                    "Ancestral Guidance",
-                    "Tremor Totem",
+                    "Cleanse Spirit",
+                    "Purge",
                     "Poison Cleansing Totem",
                 },
             },
@@ -65,19 +65,16 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    "Tremor Totem",
                     "Purge",
-                    "Earthgrab Totem",
+                    "Spirit Walk",
                 },
                 ["Enhancement"] = {
-                    "Tremor Totem",
                     "Purge",
-                    "Earthgrab Totem",
+                    "Spirit Walk",
                 },
                 ["Restoration"] = {
-                    "Tremor Totem",
                     "Purge",
-                    "Earthgrab Totem",
+                    "Spirit Walk",
                 },
             },
         },
@@ -88,19 +85,22 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    "Ancestral Guidance",
-                    "Tremor Totem",
-                    "Hex (nice to have)",
+                    "Cleanse Spirit",
+                    "Purge",
+                    "Thunderous Paws (nice to have)",
+                    "Spirit Walk",
                 },
                 ["Enhancement"] = {
-                    "Ancestral Guidance",
-                    "Tremor Totem",
-                    "Hex (nice to have)",
+                    "Cleanse Spirit",
+                    "Purge",
+                    "Thunderous Paws (nice to have)",
+                    "Spirit Walk",
                 },
                 ["Restoration"] = {
-                    "Ancestral Guidance",
-                    "Tremor Totem",
-                    "Hex (nice to have)",
+                    "Cleanse Spirit",
+                    "Purge",
+                    "Thunderous Paws (nice to have)",
+                    "Spirit Walk",
                 },
             },
         },
@@ -111,15 +111,12 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    "Tremor Totem",
                     "Poison Cleansing Totem",
                 },
                 ["Enhancement"] = {
-                    "Tremor Totem",
                     "Poison Cleansing Totem",
                 },
                 ["Restoration"] = {
-                    "Tremor Totem",
                     "Poison Cleansing Totem",
                 },
             },
@@ -131,19 +128,19 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    "Tremor Totem (nice to have)",
-                    "Poison Cleansing Totem",
-                    "Hex",
+                    "Purge (nice to have)",
+                    "Thunderous Paws",
+                    "Spirit Walk",
                 },
                 ["Enhancement"] = {
-                    "Tremor Totem (nice to have)",
-                    "Poison Cleansing Totem",
-                    "Hex",
+                    "Purge (nice to have)",
+                    "Thunderous Paws",
+                    "Spirit Walk",
                 },
                 ["Restoration"] = {
-                    "Tremor Totem (nice to have)",
-                    "Poison Cleansing Totem",
-                    "Hex",
+                    "Purge (nice to have)",
+                    "Thunderous Paws",
+                    "Spirit Walk",
                 },
             },
         },
@@ -154,19 +151,16 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    "Tremor Totem",
-                    "Poison Cleansing Totem",
-                    "Wind Rush Totem",
+                    "Purge",
+                    "Gust of Wind",
                 },
                 ["Enhancement"] = {
-                    "Tremor Totem",
-                    "Poison Cleansing Totem",
-                    "Wind Rush Totem",
+                    "Purge",
+                    "Gust of Wind",
                 },
                 ["Restoration"] = {
-                    "Tremor Totem",
-                    "Poison Cleansing Totem",
-                    "Wind Rush Totem",
+                    "Purge",
+                    "Gust of Wind",
                 },
             },
         },
@@ -177,16 +171,19 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    "Tremor Totem",
-                    "Hex (nice to have)",
+                    "Cleanse Spirit",
+                    "Thunderous Paws",
+                    "Spirit Walk",
                 },
                 ["Enhancement"] = {
-                    "Tremor Totem",
-                    "Hex (nice to have)",
+                    "Cleanse Spirit",
+                    "Thunderous Paws",
+                    "Spirit Walk",
                 },
                 ["Restoration"] = {
-                    "Tremor Totem",
-                    "Hex (nice to have)",
+                    "Cleanse Spirit",
+                    "Thunderous Paws",
+                    "Spirit Walk",
                 },
             },
         },
