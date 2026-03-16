@@ -190,6 +190,26 @@ local TALENT_DATA = {
 -- When a matching affix is active this list is shown instead of the dungeon default.
 -- These apply across all dungeons.
 local AFFIX_TALENT_DATA = {
+    ["SHAMAN"] = {
+        ["Elemental"] = {
+            ["Xal'atath's Bargain: Devour"] = {
+                "Poison Cleansing Totem",
+                "Cleanse Spirit",
+            },
+        },
+        ["Enhancement"] = {
+            ["Xal'atath's Bargain: Devour"] = {
+                "Poison Cleansing Totem",
+                "Cleanse Spirit",
+            },
+        },
+        ["Restoration"] = {
+            ["Xal'atath's Bargain: Devour"] = {
+                "Poison Cleansing Totem",
+                "Cleanse Spirit",
+            },
+        },
+    },
 }
 
 ----------------------------------------------------------------

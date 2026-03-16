@@ -247,6 +247,32 @@ describe("MPlusTalents", function()
         end)
     end)
 
+    describe("when Devour affix is active", function()
+        before_each(function()
+            _G._instanceID = 2811
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 2
+            _G._specName = "Enhancement"
+            _G._currentAffixes = { { id = 160 } }
+            _G._affixInfoByID = { [160] = { name = "Xal'atath's Bargain: Devour" } }
+        end)
+
+        it("shows Devour-specific talents instead of dungeon defaults", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_true(notif._data.shown)
+            assert.are.equal("Poison Cleansing Totem", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Cleanse Spirit", notif._data.fontStrings[3]._data.text)
+        end)
+
+        it("includes the affix name in the title", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_truthy(notif._data.fontStrings[1]._data.text:find("Devour"))
+        end)
+    end)
+
     describe("when the M+ affix API is unavailable", function()
         before_each(function()
             _G._instanceID = 2811
