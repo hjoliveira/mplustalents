@@ -14,13 +14,19 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    "Stormkeeper",
-                    "Liquid Magma Totem",
-                    "Ascendance",
+                    "Tremor Totem (nice to have)",
+                    "Purge",
+                    "Spirit Walk (nice to have)",
+                },
+                ["Enhancement"] = {
+                    "Tremor Totem (nice to have)",
+                    "Purge",
+                    "Spirit Walk (nice to have)",
                 },
                 ["Restoration"] = {
-                    "Healing Tide Totem",
-                    "Ancestral Vigor",
+                    "Tremor Totem (nice to have)",
+                    "Purge",
+                    "Spirit Walk (nice to have)",
                 },
             },
         },
@@ -28,37 +34,154 @@ local TALENT_DATA = {
     -- Windrunner Spire (Midnight)
     [2805] = {
         dungeonName = "Windrunner Spire",
-        classes = {},
+        classes = {
+            ["SHAMAN"] = {
+                ["Elemental"] = {
+                    "Cleanse Spirit",
+                    "Purge",
+                    "Poison Cleansing Totem",
+                },
+                ["Enhancement"] = {
+                    "Cleanse Spirit",
+                    "Purge",
+                    "Poison Cleansing Totem",
+                },
+                ["Restoration"] = {
+                    "Cleanse Spirit",
+                    "Purge",
+                    "Poison Cleansing Totem",
+                },
+            },
+        },
     },
     -- Maisara Caverns (Midnight)
     [2874] = {
         dungeonName = "Maisara Caverns",
-        classes = {},
+        classes = {
+            ["SHAMAN"] = {
+                ["Elemental"] = {
+                    "Purge",
+                    "Spirit Walk",
+                },
+                ["Enhancement"] = {
+                    "Purge",
+                    "Spirit Walk",
+                },
+                ["Restoration"] = {
+                    "Purge",
+                    "Spirit Walk",
+                },
+            },
+        },
     },
     -- Nexus-Point Xenas (Midnight)
     [2915] = {
         dungeonName = "Nexus-Point Xenas",
-        classes = {},
+        classes = {
+            ["SHAMAN"] = {
+                ["Elemental"] = {
+                    "Cleanse Spirit",
+                    "Purge",
+                    "Thunderous Paws (nice to have)",
+                    "Spirit Walk",
+                },
+                ["Enhancement"] = {
+                    "Cleanse Spirit",
+                    "Purge",
+                    "Thunderous Paws (nice to have)",
+                    "Spirit Walk",
+                },
+                ["Restoration"] = {
+                    "Cleanse Spirit",
+                    "Purge",
+                    "Thunderous Paws (nice to have)",
+                    "Spirit Walk",
+                },
+            },
+        },
     },
     -- Algeth'ar Academy (Dragonflight)
     [2526] = {
         dungeonName = "Algeth'ar Academy",
-        classes = {},
+        classes = {
+            ["SHAMAN"] = {
+                ["Elemental"] = {
+                    "Poison Cleansing Totem",
+                },
+                ["Enhancement"] = {
+                    "Poison Cleansing Totem",
+                },
+                ["Restoration"] = {
+                    "Poison Cleansing Totem",
+                },
+            },
+        },
     },
     -- Seat of the Triumvirate (Legion)
     [1753] = {
         dungeonName = "Seat of the Triumvirate",
-        classes = {},
+        classes = {
+            ["SHAMAN"] = {
+                ["Elemental"] = {
+                    "Purge (nice to have)",
+                    "Thunderous Paws",
+                    "Spirit Walk",
+                },
+                ["Enhancement"] = {
+                    "Purge (nice to have)",
+                    "Thunderous Paws",
+                    "Spirit Walk",
+                },
+                ["Restoration"] = {
+                    "Purge (nice to have)",
+                    "Thunderous Paws",
+                    "Spirit Walk",
+                },
+            },
+        },
     },
     -- Skyreach (Warlords of Draenor)
     [1209] = {
         dungeonName = "Skyreach",
-        classes = {},
+        classes = {
+            ["SHAMAN"] = {
+                ["Elemental"] = {
+                    "Purge",
+                    "Gust of Wind",
+                },
+                ["Enhancement"] = {
+                    "Purge",
+                    "Gust of Wind",
+                },
+                ["Restoration"] = {
+                    "Purge",
+                    "Gust of Wind",
+                },
+            },
+        },
     },
     -- Pit of Saron (Wrath of the Lich King)
     [658] = {
         dungeonName = "Pit of Saron",
-        classes = {},
+        classes = {
+            ["SHAMAN"] = {
+                ["Elemental"] = {
+                    "Cleanse Spirit",
+                    "Thunderous Paws",
+                    "Spirit Walk",
+                },
+                ["Enhancement"] = {
+                    "Cleanse Spirit",
+                    "Thunderous Paws",
+                    "Spirit Walk",
+                },
+                ["Restoration"] = {
+                    "Cleanse Spirit",
+                    "Thunderous Paws",
+                    "Spirit Walk",
+                },
+            },
+        },
     },
 
 }
@@ -69,10 +192,21 @@ local TALENT_DATA = {
 local AFFIX_TALENT_DATA = {
     ["SHAMAN"] = {
         ["Elemental"] = {
-            ["Fortified"] = {
-                "Storm Elemental",
-                "Stormkeeper",
-                "Ascendance",
+            ["Xal'atath's Bargain: Devour"] = {
+                "Poison Cleansing Totem",
+                "Cleanse Spirit",
+            },
+        },
+        ["Enhancement"] = {
+            ["Xal'atath's Bargain: Devour"] = {
+                "Poison Cleansing Totem",
+                "Cleanse Spirit",
+            },
+        },
+        ["Restoration"] = {
+            ["Xal'atath's Bargain: Devour"] = {
+                "Poison Cleansing Totem",
+                "Cleanse Spirit",
             },
         },
     },

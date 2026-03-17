@@ -46,13 +46,12 @@ describe("MPlusTalents", function()
         it("creates a row for each talent with icon and name", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local notif = addon.getFrame("MPlusTalentsNotification")
-            -- 3 Elemental talents: Stormkeeper, Liquid Magma Totem, Ascendance
-            -- Each talent has an icon texture and a name font string
+            -- 3 Elemental talents from utility table
             -- Title is fontStrings[1], talent names are fontStrings[2..4]
             assert.is_true(#notif._data.fontStrings >= 4)
-            assert.are.equal("Stormkeeper", notif._data.fontStrings[2]._data.text)
-            assert.are.equal("Liquid Magma Totem", notif._data.fontStrings[3]._data.text)
-            assert.are.equal("Ascendance", notif._data.fontStrings[4]._data.text)
+            assert.are.equal("Tremor Totem (nice to have)", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Purge", notif._data.fontStrings[3]._data.text)
+            assert.are.equal("Spirit Walk (nice to have)", notif._data.fontStrings[4]._data.text)
         end)
 
         it("sets an icon texture for each talent", function()
@@ -112,9 +111,10 @@ describe("MPlusTalents", function()
             assert.is_true(notif._data.shown)
             local title = notif._data.fontStrings[1]
             assert.is_truthy(title._data.text:find("Restoration"))
-            -- 2 Restoration talents
-            assert.are.equal("Healing Tide Totem", notif._data.fontStrings[2]._data.text)
-            assert.are.equal("Ancestral Vigor", notif._data.fontStrings[3]._data.text)
+            -- 3 Restoration talents from utility table
+            assert.are.equal("Tremor Totem (nice to have)", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Purge", notif._data.fontStrings[3]._data.text)
+            assert.are.equal("Spirit Walk (nice to have)", notif._data.fontStrings[4]._data.text)
         end)
     end)
 
@@ -156,7 +156,7 @@ describe("MPlusTalents", function()
         end)
     end)
 
-    describe("when in a known dungeon with class data but not for current spec", function()
+    describe("when Enhancement shaman enters Magisters' Terrace", function()
         before_each(function()
             _G._instanceName = "Magisters' Terrace"
             _G._instanceType = "party"
@@ -167,10 +167,13 @@ describe("MPlusTalents", function()
             _G._specName = "Enhancement"
         end)
 
-        it("prints a fallback message to chat", function()
+        it("shows utility talents for Enhancement", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
-            local output = table.concat(addon.getPrinted(), "\n")
-            assert.is_truthy(output:find("no talent recommendations"))
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_true(notif._data.shown)
+            assert.are.equal("Tremor Totem (nice to have)", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Purge", notif._data.fontStrings[3]._data.text)
+            assert.are.equal("Spirit Walk (nice to have)", notif._data.fontStrings[4]._data.text)
         end)
     end)
 
@@ -217,7 +220,7 @@ describe("MPlusTalents", function()
         end)
     end)
 
-    describe("when weekly affix has specific recommendations", function()
+    describe("when weekly affix is active but no affix overrides exist", function()
         before_each(function()
             _G._instanceID = 2811
             _G._playerClass = "SHAMAN"
@@ -228,46 +231,45 @@ describe("MPlusTalents", function()
             _G._affixInfoByID = { [10] = { name = "Fortified" } }
         end)
 
-        it("shows the affix-specific talent list", function()
-            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
-            local notif = addon.getFrame("MPlusTalentsNotification")
-            assert.is_true(notif._data.shown)
-            assert.are.equal("Storm Elemental", notif._data.fontStrings[2]._data.text)
-            assert.are.equal("Stormkeeper",     notif._data.fontStrings[3]._data.text)
-            assert.are.equal("Ascendance",      notif._data.fontStrings[4]._data.text)
-        end)
-
-        it("includes the matched affix name in the title", function()
-            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
-            local notif = addon.getFrame("MPlusTalentsNotification")
-            assert.is_truthy(notif._data.fontStrings[1]._data.text:find("Fortified"))
-        end)
-    end)
-
-    describe("when weekly affix has no specific recommendations", function()
-        before_each(function()
-            _G._instanceID = 2811
-            _G._playerClass = "SHAMAN"
-            _G._playerClassName = "Shaman"
-            _G._specIndex = 1
-            _G._specName = "Elemental"
-            _G._currentAffixes = { { id = 11 } }
-            _G._affixInfoByID = { [11] = { name = "Tyrannical" } }
-        end)
-
         it("falls back to the default talent list", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local notif = addon.getFrame("MPlusTalentsNotification")
             assert.is_true(notif._data.shown)
-            assert.are.equal("Stormkeeper",        notif._data.fontStrings[2]._data.text)
-            assert.are.equal("Liquid Magma Totem", notif._data.fontStrings[3]._data.text)
-            assert.are.equal("Ascendance",         notif._data.fontStrings[4]._data.text)
+            assert.are.equal("Tremor Totem (nice to have)", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Purge",                       notif._data.fontStrings[3]._data.text)
+            assert.are.equal("Spirit Walk (nice to have)",  notif._data.fontStrings[4]._data.text)
         end)
 
         it("does not include the affix name in the title", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local notif = addon.getFrame("MPlusTalentsNotification")
-            assert.is_falsy(notif._data.fontStrings[1]._data.text:find("Tyrannical"))
+            assert.is_falsy(notif._data.fontStrings[1]._data.text:find("Fortified"))
+        end)
+    end)
+
+    describe("when Devour affix is active", function()
+        before_each(function()
+            _G._instanceID = 2811
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 2
+            _G._specName = "Enhancement"
+            _G._currentAffixes = { { id = 160 } }
+            _G._affixInfoByID = { [160] = { name = "Xal'atath's Bargain: Devour" } }
+        end)
+
+        it("shows Devour-specific talents instead of dungeon defaults", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_true(notif._data.shown)
+            assert.are.equal("Poison Cleansing Totem", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Cleanse Spirit", notif._data.fontStrings[3]._data.text)
+        end)
+
+        it("includes the affix name in the title", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_truthy(notif._data.fontStrings[1]._data.text:find("Devour"))
         end)
     end)
 
@@ -285,7 +287,104 @@ describe("MPlusTalents", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local notif = addon.getFrame("MPlusTalentsNotification")
             assert.is_true(notif._data.shown)
-            assert.are.equal("Stormkeeper", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Tremor Totem (nice to have)", notif._data.fontStrings[2]._data.text)
+        end)
+    end)
+
+    describe("shaman utility talents per dungeon", function()
+        it("shows correct talents for Maisara Caverns", function()
+            _G._instanceID = 2874
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 1
+            _G._specName = "Elemental"
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_true(notif._data.shown)
+            assert.are.equal("Purge", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Spirit Walk", notif._data.fontStrings[3]._data.text)
+        end)
+
+        it("shows correct talents for Windrunner Spire", function()
+            _G._instanceID = 2805
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 3
+            _G._specName = "Restoration"
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_true(notif._data.shown)
+            assert.are.equal("Cleanse Spirit", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Purge", notif._data.fontStrings[3]._data.text)
+            assert.are.equal("Poison Cleansing Totem", notif._data.fontStrings[4]._data.text)
+        end)
+
+        it("shows correct talents for Skyreach", function()
+            _G._instanceID = 1209
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 2
+            _G._specName = "Enhancement"
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_true(notif._data.shown)
+            assert.are.equal("Purge", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Gust of Wind", notif._data.fontStrings[3]._data.text)
+        end)
+
+        it("shows correct talents for Pit of Saron", function()
+            _G._instanceID = 658
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 1
+            _G._specName = "Elemental"
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_true(notif._data.shown)
+            assert.are.equal("Cleanse Spirit", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Thunderous Paws", notif._data.fontStrings[3]._data.text)
+            assert.are.equal("Spirit Walk", notif._data.fontStrings[4]._data.text)
+        end)
+
+        it("shows correct talents for Nexus-Point Xenas", function()
+            _G._instanceID = 2915
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 3
+            _G._specName = "Restoration"
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_true(notif._data.shown)
+            assert.are.equal("Cleanse Spirit", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Purge", notif._data.fontStrings[3]._data.text)
+            assert.are.equal("Thunderous Paws (nice to have)", notif._data.fontStrings[4]._data.text)
+            assert.are.equal("Spirit Walk", notif._data.fontStrings[5]._data.text)
+        end)
+
+        it("shows correct talents for Seat of the Triumvirate", function()
+            _G._instanceID = 1753
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 2
+            _G._specName = "Enhancement"
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_true(notif._data.shown)
+            assert.are.equal("Purge (nice to have)", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Thunderous Paws", notif._data.fontStrings[3]._data.text)
+            assert.are.equal("Spirit Walk", notif._data.fontStrings[4]._data.text)
+        end)
+
+        it("shows correct talents for Algeth'ar Academy", function()
+            _G._instanceID = 2526
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 1
+            _G._specName = "Elemental"
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_true(notif._data.shown)
+            assert.are.equal("Poison Cleansing Totem", notif._data.fontStrings[2]._data.text)
         end)
     end)
 
