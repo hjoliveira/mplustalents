@@ -49,6 +49,10 @@ Follow red/green TDD:
 
 Never commit with failing tests. CI runs on all pushes and PRs.
 
+## Versioning
+
+The addon version is stored in `MPlusTalents/MPlusTalents.toc` under `## Version` and follows [semver](https://semver.org/) (major.minor.patch). When making a change to the addon, if the version has not already been bumped on the current working branch, ask the user whether the version should be bumped and whether it should be a patch, minor, or major bump.
+
 ## Git Workflow
 
 **Never push directly to main.** All changes must go through a pull request.
