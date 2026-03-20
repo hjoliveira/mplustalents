@@ -320,7 +320,10 @@ local function ShowNotification(dungeonName, specName, className, talents, affix
         row.text:SetPoint("LEFT", row.icon, "RIGHT", 8, 0)
 
         local iconID = 134400 -- default question mark
-        local spellInfo = C_Spell and C_Spell.GetSpellInfo and C_Spell.GetSpellInfo(talentName)
+        -- Strip parenthetical annotations like "(nice to have)" so the API
+        -- receives the real spell name for icon lookup.
+        local spellLookupName = talentName:match("^(.-)%s*%(") or talentName
+        local spellInfo = C_Spell and C_Spell.GetSpellInfo and C_Spell.GetSpellInfo(spellLookupName)
         if spellInfo and spellInfo.iconID then
             iconID = spellInfo.iconID
         end
