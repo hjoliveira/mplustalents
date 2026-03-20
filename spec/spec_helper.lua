@@ -155,10 +155,28 @@ local function resetMocks()
         end,
     }
 
-    -- C_Spell mock
+    -- Known spell names that the mock API recognises (simulates real WoW behaviour
+    -- where only exact spell names return results).
+    _G._knownSpells = {
+        ["Tremor Totem"]          = 136108,
+        ["Purge"]                 = 136075,
+        ["Spirit Walk"]           = 132328,
+        ["Cleanse Spirit"]        = 236288,
+        ["Poison Cleansing Totem"]= 136070,
+        ["Thunderous Paws"]       = 236185,
+        ["Gust of Wind"]          = 136022,
+    }
+
+    -- C_Spell mock – only returns spell info for known spell names.
+    -- Strings with annotations like "Tremor Totem (nice to have)" will NOT match,
+    -- just as the real WoW API would fail to find them.
     _G.C_Spell = {
         GetSpellInfo = function(spellIdentifier)
-            return { name = spellIdentifier, iconID = 134400 }
+            local icon = _G._knownSpells[spellIdentifier]
+            if icon then
+                return { name = spellIdentifier, iconID = icon }
+            end
+            return nil
         end,
     }
 

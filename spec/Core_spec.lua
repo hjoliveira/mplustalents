@@ -388,6 +388,33 @@ describe("MPlusTalents", function()
         end)
     end)
 
+    describe("talent icons for annotated names", function()
+        before_each(function()
+            _G._instanceID = 2811
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 1
+            _G._specName = "Elemental"
+        end)
+
+        it("shows the real spell icon for a niceToHave talent", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            -- Tremor Totem is { name = "Tremor Totem", niceToHave = true } in data,
+            -- so its icon should be looked up by the clean spell name.
+            local tremorIcon = notif._data.textures[1]._data.texture
+            assert.are.equal(136108, tremorIcon)
+        end)
+
+        it("shows the real spell icon for a talent without annotation", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            -- "Purge" (no annotation) should also resolve correctly.
+            local purgeIcon = notif._data.textures[2]._data.texture
+            assert.are.equal(136075, purgeIcon)
+        end)
+    end)
+
     describe("close button", function()
         before_each(function()
             _G._instanceID = 2811
