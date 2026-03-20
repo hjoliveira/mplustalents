@@ -397,11 +397,11 @@ describe("MPlusTalents", function()
             _G._specName = "Elemental"
         end)
 
-        it("shows the real spell icon even when the talent name has a parenthetical annotation", function()
+        it("shows the real spell icon for a niceToHave talent", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local notif = addon.getFrame("MPlusTalentsNotification")
-            -- "Tremor Totem (nice to have)" should resolve to Tremor Totem's icon (136108),
-            -- not the default question-mark icon (134400).
+            -- Tremor Totem is { name = "Tremor Totem", niceToHave = true } in data,
+            -- so its icon should be looked up by the clean spell name.
             local tremorIcon = notif._data.textures[1]._data.texture
             assert.are.equal(136108, tremorIcon)
         end)

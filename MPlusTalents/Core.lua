@@ -4,7 +4,8 @@
 local ADDON_PREFIX = "|cff00ccff[M+ Talents]|r"
 
 -- Talent recommendations keyed by instanceID (Map.db2), then by class token,
--- then by spec name. Each leaf entry is a plain list of talent names/notes.
+-- then by spec name. Each leaf entry is either a plain spell-name string or a
+-- table { name = "Spell", niceToHave = true } for optional talents.
 local TALENT_DATA = {
     ---- Midnight Season 1 Dungeons ----
 
@@ -14,19 +15,19 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    "Tremor Totem (nice to have)",
+                    { name = "Tremor Totem", niceToHave = true },
                     "Purge",
-                    "Spirit Walk (nice to have)",
+                    { name = "Spirit Walk", niceToHave = true },
                 },
                 ["Enhancement"] = {
-                    "Tremor Totem (nice to have)",
+                    { name = "Tremor Totem", niceToHave = true },
                     "Purge",
-                    "Spirit Walk (nice to have)",
+                    { name = "Spirit Walk", niceToHave = true },
                 },
                 ["Restoration"] = {
-                    "Tremor Totem (nice to have)",
+                    { name = "Tremor Totem", niceToHave = true },
                     "Purge",
-                    "Spirit Walk (nice to have)",
+                    { name = "Spirit Walk", niceToHave = true },
                 },
             },
         },
@@ -82,19 +83,19 @@ local TALENT_DATA = {
                 ["Elemental"] = {
                     "Cleanse Spirit",
                     "Purge",
-                    "Thunderous Paws (nice to have)",
+                    { name = "Thunderous Paws", niceToHave = true },
                     "Spirit Walk",
                 },
                 ["Enhancement"] = {
                     "Cleanse Spirit",
                     "Purge",
-                    "Thunderous Paws (nice to have)",
+                    { name = "Thunderous Paws", niceToHave = true },
                     "Spirit Walk",
                 },
                 ["Restoration"] = {
                     "Cleanse Spirit",
                     "Purge",
-                    "Thunderous Paws (nice to have)",
+                    { name = "Thunderous Paws", niceToHave = true },
                     "Spirit Walk",
                 },
             },
@@ -123,17 +124,17 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    "Purge (nice to have)",
+                    { name = "Purge", niceToHave = true },
                     "Thunderous Paws",
                     "Spirit Walk",
                 },
                 ["Enhancement"] = {
-                    "Purge (nice to have)",
+                    { name = "Purge", niceToHave = true },
                     "Thunderous Paws",
                     "Spirit Walk",
                 },
                 ["Restoration"] = {
-                    "Purge (nice to have)",
+                    { name = "Purge", niceToHave = true },
                     "Thunderous Paws",
                     "Spirit Walk",
                 },
@@ -306,7 +307,7 @@ local function ShowNotification(dungeonName, specName, className, talents, affix
     notifFrame.title:SetText(title)
 
     local yOffset = -40
-    for i, talentName in ipairs(talents) do
+    for i, entry in ipairs(talents) do
         local row = talentRows[i]
         if not row then
             row = {}
@@ -319,16 +320,21 @@ local function ShowNotification(dungeonName, specName, className, talents, affix
         row.icon:SetPoint("TOPLEFT", notifFrame, "TOPLEFT", 16, yOffset)
         row.text:SetPoint("LEFT", row.icon, "RIGHT", 8, 0)
 
+        local spellName = type(entry) == "table" and entry.name or entry
+        local niceToHave = type(entry) == "table" and entry.niceToHave
+
         local iconID = 134400 -- default question mark
-        -- Strip parenthetical annotations like "(nice to have)" so the API
-        -- receives the real spell name for icon lookup.
-        local spellLookupName = talentName:match("^(.-)%s*%(") or talentName
-        local spellInfo = C_Spell and C_Spell.GetSpellInfo and C_Spell.GetSpellInfo(spellLookupName)
+        local spellInfo = C_Spell and C_Spell.GetSpellInfo and C_Spell.GetSpellInfo(spellName)
         if spellInfo and spellInfo.iconID then
             iconID = spellInfo.iconID
         end
         row.icon:SetTexture(iconID)
-        row.text:SetText(talentName)
+
+        local displayText = spellName
+        if niceToHave then
+            displayText = spellName .. " (nice to have)"
+        end
+        row.text:SetText(displayText)
 
         row.icon:Show()
         row.text:Show()
