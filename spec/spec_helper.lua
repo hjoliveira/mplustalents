@@ -157,24 +157,34 @@ local function resetMocks()
 
     -- Known spell names that the mock API recognises (simulates real WoW behaviour
     -- where only exact spell names return results).
+    -- Each entry maps spell name -> { iconID, spellID }.
     _G._knownSpells = {
-        ["Tremor Totem"]          = 136108,
-        ["Purge"]                 = 136075,
-        ["Spirit Walk"]           = 132328,
-        ["Cleanse Spirit"]        = 236288,
-        ["Poison Cleansing Totem"]= 136070,
-        ["Thunderous Paws"]       = 236185,
-        ["Gust of Wind"]          = 136022,
+        ["Tremor Totem"]          = { iconID = 136108, spellID = 8143 },
+        ["Purge"]                 = { iconID = 136075, spellID = 370 },
+        ["Spirit Walk"]           = { iconID = 132328, spellID = 58875 },
+        ["Cleanse Spirit"]        = { iconID = 236288, spellID = 51886 },
+        ["Poison Cleansing Totem"]= { iconID = 136070, spellID = 383013 },
+        ["Thunderous Paws"]       = { iconID = 236185, spellID = 378075 },
+        ["Gust of Wind"]          = { iconID = 136022, spellID = 192063 },
     }
+
+    -- Set of spell IDs the player currently has talented/learned.
+    -- Tests can override this to simulate talents the player does or doesn't have.
+    _G._playerSpells = {}
+
+    -- IsPlayerSpell mock – returns true if the player has the spell.
+    _G.IsPlayerSpell = function(spellID)
+        return _G._playerSpells[spellID] == true
+    end
 
     -- C_Spell mock – only returns spell info for known spell names.
     -- Strings with annotations like "Tremor Totem (nice to have)" will NOT match,
     -- just as the real WoW API would fail to find them.
     _G.C_Spell = {
         GetSpellInfo = function(spellIdentifier)
-            local icon = _G._knownSpells[spellIdentifier]
-            if icon then
-                return { name = spellIdentifier, iconID = icon }
+            local info = _G._knownSpells[spellIdentifier]
+            if info then
+                return { name = spellIdentifier, iconID = info.iconID, spellID = info.spellID }
             end
             return nil
         end,

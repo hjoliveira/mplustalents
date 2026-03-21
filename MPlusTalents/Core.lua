@@ -325,8 +325,12 @@ local function ShowNotification(dungeonName, specName, className, talents, affix
 
         local iconID = 134400 -- default question mark
         local spellInfo = C_Spell and C_Spell.GetSpellInfo and C_Spell.GetSpellInfo(spellName)
+        local playerHasSpell = false
         if spellInfo and spellInfo.iconID then
             iconID = spellInfo.iconID
+            if spellInfo.spellID and IsPlayerSpell and IsPlayerSpell(spellInfo.spellID) then
+                playerHasSpell = true
+            end
         end
         row.icon:SetTexture(iconID)
 
@@ -336,7 +340,11 @@ local function ShowNotification(dungeonName, specName, className, talents, affix
         end
         row.text:SetText(displayText)
 
-        row.icon:Show()
+        if playerHasSpell then
+            row.icon:Show()
+        else
+            row.icon:Hide()
+        end
         row.text:Show()
 
         yOffset = yOffset - 30
