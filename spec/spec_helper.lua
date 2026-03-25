@@ -206,14 +206,24 @@ local function resetMocks()
         return _G._playerSpells[spellID] == true
     end
 
-    -- C_Spell mock – only returns spell info for known spell names.
-    -- Strings with annotations like "Tremor Totem (nice to have)" will NOT match,
-    -- just as the real WoW API would fail to find them.
+    -- C_Spell mock – returns spell info for known spell names or spell IDs.
+    -- Name lookups may fail for talents the player doesn't have (just like real WoW),
+    -- but ID lookups always succeed.
     _G.C_Spell = {
         GetSpellInfo = function(spellIdentifier)
-            local info = _G._knownSpells[spellIdentifier]
-            if info then
-                return { name = spellIdentifier, iconID = info.iconID, spellID = info.spellID }
+            if type(spellIdentifier) == "number" then
+                -- Lookup by spell ID (always works)
+                for name, info in pairs(_G._knownSpells) do
+                    if info.spellID == spellIdentifier then
+                        return { name = name, iconID = info.iconID, spellID = info.spellID }
+                    end
+                end
+            else
+                -- Lookup by name (may fail for unlearned talents)
+                local info = _G._knownSpells[spellIdentifier]
+                if info then
+                    return { name = spellIdentifier, iconID = info.iconID, spellID = info.spellID }
+                end
             end
             return nil
         end,

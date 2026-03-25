@@ -413,6 +413,25 @@ describe("MPlusTalents", function()
             local purgeIcon = notif._data.textures[2]._data.texture
             assert.are.equal(136075, purgeIcon)
         end)
+
+        it("resolves icon by spellID when name lookup fails", function()
+            -- Remove Tremor Totem from name-based lookup to simulate
+            -- the real WoW API failing for unlearned talents.
+            local saved = _G._knownSpells["Tremor Totem"]
+            _G._knownSpells["Tremor Totem"] = nil
+            -- Re-register it under a different name so only ID lookup works
+            _G._knownSpells["_Tremor Totem_hidden"] = saved
+
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            -- Should still resolve via spellID (8143 -> iconID 136108)
+            local tremorIcon = notif._data.textures[1]._data.texture
+            assert.are.equal(136108, tremorIcon)
+
+            -- Restore
+            _G._knownSpells["Tremor Totem"] = saved
+            _G._knownSpells["_Tremor Totem_hidden"] = nil
+        end)
     end)
 
     describe("icons for talents the player does not have", function()
