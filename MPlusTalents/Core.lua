@@ -414,7 +414,7 @@ end)
 -- Slash command
 ----------------------------------------------------------------
 
-SLASH_MPLUSTALENTS1 = "/mpt"
+SLASH_MPLUSTALENTS1 = "/mplustalents"
 SlashCmdList["MPLUSTALENTS"] = function(msg)
     msg = (msg or ""):lower():match("^%s*(.-)%s*$")
 
