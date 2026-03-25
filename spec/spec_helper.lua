@@ -12,10 +12,12 @@ local function createMockWidget()
         shown = true,
         text = nil,
         texture = nil,
+        desaturated = false,
         movable = false,
         registeredForDrag = nil,
         fontStrings = {},
         textures = {},
+        childFrames = {},
         scripts = {},
     }
     local widget = { _data = data }
@@ -31,6 +33,7 @@ local function createMockWidget()
     widget.SetText = function(self, text) data.text = text end
     widget.GetText = function(self) return data.text end
     widget.SetTexture = function(self, tex) data.texture = tex end
+    widget.SetDesaturated = function(self, desaturated) data.desaturated = desaturated end
     widget.SetMovable = function(self, movable) data.movable = movable end
     widget.RegisterForDrag = function(self, button) data.registeredForDrag = button end
     widget.SetScript = function(self, scriptType, handler)
@@ -65,6 +68,9 @@ local function resetMocks()
     -- Named frames registry
     _G._frames = {}
 
+    -- Slash command registry
+    _G.SlashCmdList = {}
+
     -- Timers registry
     _G._timers = {}
 
@@ -95,11 +101,34 @@ local function resetMocks()
     -- UIParent mock
     _G.UIParent = createMockWidget()
 
+    -- GameTooltip mock
+    _G._tooltipData = { owner = nil, anchor = nil, spellID = nil, shown = false }
+    _G.GameTooltip = {
+        SetOwner = function(self, owner, anchor)
+            _G._tooltipData.owner = owner
+            _G._tooltipData.anchor = anchor
+        end,
+        SetSpellByID = function(self, spellID)
+            _G._tooltipData.spellID = spellID
+        end,
+        Show = function(self)
+            _G._tooltipData.shown = true
+        end,
+        Hide = function(self)
+            _G._tooltipData.shown = false
+            _G._tooltipData.spellID = nil
+        end,
+    }
+
     -- CreateFrame mock
     _G.CreateFrame = function(frameType, name, parent, template)
         local frame = createMockWidget()
         if name then
             _G._frames[name] = frame
+        end
+        -- Track parent-child relationship
+        if parent and parent._data and parent._data.childFrames then
+            table.insert(parent._data.childFrames, frame)
         end
         -- First frame created becomes the event frame
         if not eventFrame then
@@ -157,24 +186,44 @@ local function resetMocks()
 
     -- Known spell names that the mock API recognises (simulates real WoW behaviour
     -- where only exact spell names return results).
+    -- Each entry maps spell name -> { iconID, spellID }.
     _G._knownSpells = {
-        ["Tremor Totem"]          = 136108,
-        ["Purge"]                 = 136075,
-        ["Spirit Walk"]           = 132328,
-        ["Cleanse Spirit"]        = 236288,
-        ["Poison Cleansing Totem"]= 136070,
-        ["Thunderous Paws"]       = 236185,
-        ["Gust of Wind"]          = 136022,
+        ["Tremor Totem"]          = { iconID = 136108, spellID = 8143 },
+        ["Purge"]                 = { iconID = 136075, spellID = 370 },
+        ["Spirit Walk"]           = { iconID = 132328, spellID = 58875 },
+        ["Cleanse Spirit"]        = { iconID = 236288, spellID = 51886 },
+        ["Poison Cleansing Totem"]= { iconID = 136070, spellID = 383013 },
+        ["Thunderous Paws"]       = { iconID = 236185, spellID = 378075 },
+        ["Gust of Wind"]          = { iconID = 136022, spellID = 192063 },
     }
 
-    -- C_Spell mock – only returns spell info for known spell names.
-    -- Strings with annotations like "Tremor Totem (nice to have)" will NOT match,
-    -- just as the real WoW API would fail to find them.
+    -- Set of spell IDs the player currently has talented/learned.
+    -- Tests can override this to simulate talents the player does or doesn't have.
+    _G._playerSpells = {}
+
+    -- IsPlayerSpell mock – returns true if the player has the spell.
+    _G.IsPlayerSpell = function(spellID)
+        return _G._playerSpells[spellID] == true
+    end
+
+    -- C_Spell mock – returns spell info for known spell names or spell IDs.
+    -- Name lookups may fail for talents the player doesn't have (just like real WoW),
+    -- but ID lookups always succeed.
     _G.C_Spell = {
         GetSpellInfo = function(spellIdentifier)
-            local icon = _G._knownSpells[spellIdentifier]
-            if icon then
-                return { name = spellIdentifier, iconID = icon }
+            if type(spellIdentifier) == "number" then
+                -- Lookup by spell ID (always works)
+                for name, info in pairs(_G._knownSpells) do
+                    if info.spellID == spellIdentifier then
+                        return { name = name, iconID = info.iconID, spellID = info.spellID }
+                    end
+                end
+            else
+                -- Lookup by name (may fail for unlearned talents)
+                local info = _G._knownSpells[spellIdentifier]
+                if info then
+                    return { name = spellIdentifier, iconID = info.iconID, spellID = info.spellID }
+                end
             end
             return nil
         end,

@@ -4,8 +4,10 @@
 local ADDON_PREFIX = "|cff00ccff[M+ Talents]|r"
 
 -- Talent recommendations keyed by instanceID (Map.db2), then by class token,
--- then by spec name. Each leaf entry is either a plain spell-name string or a
--- table { name = "Spell", niceToHave = true } for optional talents.
+-- then by spec name. Each entry is a table with:
+--   name     = spell display name (string)
+--   spellID  = numeric spell ID for reliable icon/tooltip lookup
+--   niceToHave = true (optional) for talents that are helpful but not essential
 local TALENT_DATA = {
     ---- Midnight Season 1 Dungeons ----
 
@@ -15,19 +17,19 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    { name = "Tremor Totem", niceToHave = true },
-                    "Purge",
-                    { name = "Spirit Walk", niceToHave = true },
+                    { name = "Tremor Totem", spellID = 8143, niceToHave = true },
+                    { name = "Purge", spellID = 370 },
+                    { name = "Spirit Walk", spellID = 58875, niceToHave = true },
                 },
                 ["Enhancement"] = {
-                    { name = "Tremor Totem", niceToHave = true },
-                    "Purge",
-                    { name = "Spirit Walk", niceToHave = true },
+                    { name = "Tremor Totem", spellID = 8143, niceToHave = true },
+                    { name = "Purge", spellID = 370 },
+                    { name = "Spirit Walk", spellID = 58875, niceToHave = true },
                 },
                 ["Restoration"] = {
-                    { name = "Tremor Totem", niceToHave = true },
-                    "Purge",
-                    { name = "Spirit Walk", niceToHave = true },
+                    { name = "Tremor Totem", spellID = 8143, niceToHave = true },
+                    { name = "Purge", spellID = 370 },
+                    { name = "Spirit Walk", spellID = 58875, niceToHave = true },
                 },
             },
         },
@@ -38,19 +40,19 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    "Cleanse Spirit",
-                    "Purge",
-                    "Poison Cleansing Totem",
+                    { name = "Cleanse Spirit", spellID = 51886 },
+                    { name = "Purge", spellID = 370 },
+                    { name = "Poison Cleansing Totem", spellID = 383013 },
                 },
                 ["Enhancement"] = {
-                    "Cleanse Spirit",
-                    "Purge",
-                    "Poison Cleansing Totem",
+                    { name = "Cleanse Spirit", spellID = 51886 },
+                    { name = "Purge", spellID = 370 },
+                    { name = "Poison Cleansing Totem", spellID = 383013 },
                 },
                 ["Restoration"] = {
-                    "Cleanse Spirit",
-                    "Purge",
-                    "Poison Cleansing Totem",
+                    { name = "Cleanse Spirit", spellID = 51886 },
+                    { name = "Purge", spellID = 370 },
+                    { name = "Poison Cleansing Totem", spellID = 383013 },
                 },
             },
         },
@@ -61,16 +63,16 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    "Purge",
-                    "Spirit Walk",
+                    { name = "Purge", spellID = 370 },
+                    { name = "Spirit Walk", spellID = 58875 },
                 },
                 ["Enhancement"] = {
-                    "Purge",
-                    "Spirit Walk",
+                    { name = "Purge", spellID = 370 },
+                    { name = "Spirit Walk", spellID = 58875 },
                 },
                 ["Restoration"] = {
-                    "Purge",
-                    "Spirit Walk",
+                    { name = "Purge", spellID = 370 },
+                    { name = "Spirit Walk", spellID = 58875 },
                 },
             },
         },
@@ -81,22 +83,22 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    "Cleanse Spirit",
-                    "Purge",
-                    { name = "Thunderous Paws", niceToHave = true },
-                    "Spirit Walk",
+                    { name = "Cleanse Spirit", spellID = 51886 },
+                    { name = "Purge", spellID = 370 },
+                    { name = "Thunderous Paws", spellID = 378075, niceToHave = true },
+                    { name = "Spirit Walk", spellID = 58875 },
                 },
                 ["Enhancement"] = {
-                    "Cleanse Spirit",
-                    "Purge",
-                    { name = "Thunderous Paws", niceToHave = true },
-                    "Spirit Walk",
+                    { name = "Cleanse Spirit", spellID = 51886 },
+                    { name = "Purge", spellID = 370 },
+                    { name = "Thunderous Paws", spellID = 378075, niceToHave = true },
+                    { name = "Spirit Walk", spellID = 58875 },
                 },
                 ["Restoration"] = {
-                    "Cleanse Spirit",
-                    "Purge",
-                    { name = "Thunderous Paws", niceToHave = true },
-                    "Spirit Walk",
+                    { name = "Cleanse Spirit", spellID = 51886 },
+                    { name = "Purge", spellID = 370 },
+                    { name = "Thunderous Paws", spellID = 378075, niceToHave = true },
+                    { name = "Spirit Walk", spellID = 58875 },
                 },
             },
         },
@@ -107,13 +109,13 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    "Poison Cleansing Totem",
+                    { name = "Poison Cleansing Totem", spellID = 383013 },
                 },
                 ["Enhancement"] = {
-                    "Poison Cleansing Totem",
+                    { name = "Poison Cleansing Totem", spellID = 383013 },
                 },
                 ["Restoration"] = {
-                    "Poison Cleansing Totem",
+                    { name = "Poison Cleansing Totem", spellID = 383013 },
                 },
             },
         },
@@ -124,19 +126,19 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    { name = "Purge", niceToHave = true },
-                    "Thunderous Paws",
-                    "Spirit Walk",
+                    { name = "Purge", spellID = 370, niceToHave = true },
+                    { name = "Thunderous Paws", spellID = 378075 },
+                    { name = "Spirit Walk", spellID = 58875 },
                 },
                 ["Enhancement"] = {
-                    { name = "Purge", niceToHave = true },
-                    "Thunderous Paws",
-                    "Spirit Walk",
+                    { name = "Purge", spellID = 370, niceToHave = true },
+                    { name = "Thunderous Paws", spellID = 378075 },
+                    { name = "Spirit Walk", spellID = 58875 },
                 },
                 ["Restoration"] = {
-                    { name = "Purge", niceToHave = true },
-                    "Thunderous Paws",
-                    "Spirit Walk",
+                    { name = "Purge", spellID = 370, niceToHave = true },
+                    { name = "Thunderous Paws", spellID = 378075 },
+                    { name = "Spirit Walk", spellID = 58875 },
                 },
             },
         },
@@ -147,16 +149,16 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    "Purge",
-                    "Gust of Wind",
+                    { name = "Purge", spellID = 370 },
+                    { name = "Gust of Wind", spellID = 192063 },
                 },
                 ["Enhancement"] = {
-                    "Purge",
-                    "Gust of Wind",
+                    { name = "Purge", spellID = 370 },
+                    { name = "Gust of Wind", spellID = 192063 },
                 },
                 ["Restoration"] = {
-                    "Purge",
-                    "Gust of Wind",
+                    { name = "Purge", spellID = 370 },
+                    { name = "Gust of Wind", spellID = 192063 },
                 },
             },
         },
@@ -167,19 +169,19 @@ local TALENT_DATA = {
         classes = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
-                    "Cleanse Spirit",
-                    "Thunderous Paws",
-                    "Spirit Walk",
+                    { name = "Cleanse Spirit", spellID = 51886 },
+                    { name = "Thunderous Paws", spellID = 378075 },
+                    { name = "Spirit Walk", spellID = 58875 },
                 },
                 ["Enhancement"] = {
-                    "Cleanse Spirit",
-                    "Thunderous Paws",
-                    "Spirit Walk",
+                    { name = "Cleanse Spirit", spellID = 51886 },
+                    { name = "Thunderous Paws", spellID = 378075 },
+                    { name = "Spirit Walk", spellID = 58875 },
                 },
                 ["Restoration"] = {
-                    "Cleanse Spirit",
-                    "Thunderous Paws",
-                    "Spirit Walk",
+                    { name = "Cleanse Spirit", spellID = 51886 },
+                    { name = "Thunderous Paws", spellID = 378075 },
+                    { name = "Spirit Walk", spellID = 58875 },
                 },
             },
         },
@@ -194,20 +196,20 @@ local AFFIX_TALENT_DATA = {
     ["SHAMAN"] = {
         ["Elemental"] = {
             ["Xal'atath's Bargain: Devour"] = {
-                "Poison Cleansing Totem",
-                "Cleanse Spirit",
+                { name = "Poison Cleansing Totem", spellID = 383013 },
+                { name = "Cleanse Spirit", spellID = 51886 },
             },
         },
         ["Enhancement"] = {
             ["Xal'atath's Bargain: Devour"] = {
-                "Poison Cleansing Totem",
-                "Cleanse Spirit",
+                { name = "Poison Cleansing Totem", spellID = 383013 },
+                { name = "Cleanse Spirit", spellID = 51886 },
             },
         },
         ["Restoration"] = {
             ["Xal'atath's Bargain: Devour"] = {
-                "Poison Cleansing Totem",
-                "Cleanse Spirit",
+                { name = "Poison Cleansing Totem", spellID = 383013 },
+                { name = "Cleanse Spirit", spellID = 51886 },
             },
         },
     },
@@ -298,6 +300,7 @@ local function ShowNotification(dungeonName, specName, className, talents, affix
     for _, row in ipairs(talentRows) do
         row.icon:Hide()
         row.text:Hide()
+        row.frame:Hide()
     end
 
     local title = specName .. " " .. className .. " — " .. dungeonName
@@ -314,19 +317,32 @@ local function ShowNotification(dungeonName, specName, className, talents, affix
             row.icon = notifFrame:CreateTexture(nil, "ARTWORK")
             row.icon:SetSize(24, 24)
             row.text = notifFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            row.frame = CreateFrame("Frame", nil, notifFrame)
+            row.frame:SetSize(268, 24)
+            row.frame:SetAllPoints(row.icon)
             talentRows[i] = row
         end
 
         row.icon:SetPoint("TOPLEFT", notifFrame, "TOPLEFT", 16, yOffset)
         row.text:SetPoint("LEFT", row.icon, "RIGHT", 8, 0)
+        row.frame:SetPoint("TOPLEFT", notifFrame, "TOPLEFT", 16, yOffset)
 
         local spellName = type(entry) == "table" and entry.name or entry
         local niceToHave = type(entry) == "table" and entry.niceToHave
+        local spellID = type(entry) == "table" and entry.spellID or nil
 
         local iconID = 134400 -- default question mark
-        local spellInfo = C_Spell and C_Spell.GetSpellInfo and C_Spell.GetSpellInfo(spellName)
+        local playerHasSpell = false
+
+        -- Prefer lookup by spellID (always works), fall back to name
+        local lookupID = spellID or spellName
+        local spellInfo = C_Spell and C_Spell.GetSpellInfo and C_Spell.GetSpellInfo(lookupID)
         if spellInfo and spellInfo.iconID then
             iconID = spellInfo.iconID
+            spellID = spellID or spellInfo.spellID
+        end
+        if spellID and IsPlayerSpell and IsPlayerSpell(spellID) then
+            playerHasSpell = true
         end
         row.icon:SetTexture(iconID)
 
@@ -336,8 +352,26 @@ local function ShowNotification(dungeonName, specName, className, talents, affix
         end
         row.text:SetText(displayText)
 
+        row.icon:SetDesaturated(not playerHasSpell)
         row.icon:Show()
         row.text:Show()
+
+        -- Spell tooltip on hover
+        if spellID then
+            row.frame:SetScript("OnEnter", function(self)
+                GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                GameTooltip:SetSpellByID(spellID)
+                GameTooltip:Show()
+            end)
+            row.frame:SetScript("OnLeave", function(self)
+                GameTooltip:Hide()
+            end)
+        else
+            row.frame:SetScript("OnEnter", nil)
+            row.frame:SetScript("OnLeave", nil)
+        end
+
+        row.frame:Show()
 
         yOffset = yOffset - 30
     end
@@ -380,3 +414,33 @@ frame:SetScript("OnEvent", function(self, event, ...)
         ShowNotification(dungeonData.dungeonName, specName, className, talents, matchedAffix)
     end
 end)
+
+----------------------------------------------------------------
+-- Slash command
+----------------------------------------------------------------
+
+SLASH_MPLUSTALENTS1 = "/mplustalents"
+SlashCmdList["MPLUSTALENTS"] = function(msg)
+    msg = (msg or ""):lower():match("^%s*(.-)%s*$")
+
+    if msg == "test" then
+        local className, classToken = UnitClass("player")
+        local specIndex = GetSpecialization()
+        local _, specName = GetSpecializationInfo(specIndex)
+
+        local affixNames = GetCurrentAffixNames()
+
+        -- Find the first dungeon with data for this class/spec
+        for _, dungeonData in pairs(TALENT_DATA) do
+            local classData = dungeonData.classes[classToken]
+            local dungeonTalents = classData and classData[specName]
+            if dungeonTalents and #dungeonTalents > 0 then
+                local talents, matchedAffix = SelectTalents(dungeonTalents, classToken, specName, affixNames)
+                ShowNotification(dungeonData.dungeonName, specName, className, talents, matchedAffix)
+                return
+            end
+        end
+
+        print(ADDON_PREFIX .. " no talent recommendations for " .. specName .. " " .. className .. " yet.")
+    end
+end

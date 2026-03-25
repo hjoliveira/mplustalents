@@ -413,6 +413,111 @@ describe("MPlusTalents", function()
             local purgeIcon = notif._data.textures[2]._data.texture
             assert.are.equal(136075, purgeIcon)
         end)
+
+        it("resolves icon by spellID when name lookup fails", function()
+            -- Remove Tremor Totem from name-based lookup to simulate
+            -- the real WoW API failing for unlearned talents.
+            local saved = _G._knownSpells["Tremor Totem"]
+            _G._knownSpells["Tremor Totem"] = nil
+            -- Re-register it under a different name so only ID lookup works
+            _G._knownSpells["_Tremor Totem_hidden"] = saved
+
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            -- Should still resolve via spellID (8143 -> iconID 136108)
+            local tremorIcon = notif._data.textures[1]._data.texture
+            assert.are.equal(136108, tremorIcon)
+
+            -- Restore
+            _G._knownSpells["Tremor Totem"] = saved
+            _G._knownSpells["_Tremor Totem_hidden"] = nil
+        end)
+    end)
+
+    describe("icons for talents the player does not have", function()
+        before_each(function()
+            _G._instanceID = 2811
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 1
+            _G._specName = "Elemental"
+        end)
+
+        it("desaturates the icon when the player does not have the talent", function()
+            -- Player has Purge but NOT Tremor Totem or Spirit Walk
+            _G._playerSpells = { [370] = true }
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            -- Tremor Totem icon (index 1) should be desaturated
+            assert.is_true(notif._data.textures[1]._data.desaturated)
+            -- Purge icon (index 2) should not be desaturated
+            assert.is_false(notif._data.textures[2]._data.desaturated)
+            -- Spirit Walk icon (index 3) should be desaturated
+            assert.is_true(notif._data.textures[3]._data.desaturated)
+        end)
+
+        it("shows the icon in full color when the player has the talent", function()
+            -- Player has all three talents
+            _G._playerSpells = { [8143] = true, [370] = true, [58875] = true }
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            for i = 1, 3 do
+                assert.is_false(notif._data.textures[i]._data.desaturated)
+            end
+        end)
+
+        it("always shows the icon even when the player lacks the talent", function()
+            _G._playerSpells = {}
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            for i = 1, 3 do
+                assert.is_true(notif._data.textures[i]._data.shown)
+            end
+        end)
+    end)
+
+    describe("spell tooltips on talent rows", function()
+        before_each(function()
+            _G._instanceID = 2811
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 1
+            _G._specName = "Elemental"
+        end)
+
+        it("shows a spell tooltip on mouse enter", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            -- childFrames[1] is the close button; talent row frames start at [2]
+            local rowFrame = notif._data.childFrames[2]
+            assert.is_not_nil(rowFrame)
+            assert.is_not_nil(rowFrame._data.scripts["OnEnter"])
+            -- Simulate mouse enter
+            rowFrame._data.scripts["OnEnter"](rowFrame)
+            assert.is_true(_G._tooltipData.shown)
+            -- Tremor Totem spellID = 8143
+            assert.are.equal(8143, _G._tooltipData.spellID)
+        end)
+
+        it("hides the tooltip on mouse leave", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            local rowFrame = notif._data.childFrames[2]
+            -- Enter then leave
+            rowFrame._data.scripts["OnEnter"](rowFrame)
+            assert.is_true(_G._tooltipData.shown)
+            rowFrame._data.scripts["OnLeave"](rowFrame)
+            assert.is_false(_G._tooltipData.shown)
+        end)
+
+        it("shows the correct spell for each row", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            -- Second talent is Purge (spellID = 370); childFrames[3]
+            local rowFrame2 = notif._data.childFrames[3]
+            rowFrame2._data.scripts["OnEnter"](rowFrame2)
+            assert.are.equal(370, _G._tooltipData.spellID)
+        end)
     end)
 
     describe("close button", function()
@@ -432,6 +537,52 @@ describe("MPlusTalents", function()
 
             closeBtn._data.scripts["OnClick"](closeBtn)
             assert.is_false(notif._data.shown)
+        end)
+    end)
+
+    describe("/mpt test slash command", function()
+        before_each(function()
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 1
+            _G._specName = "Elemental"
+        end)
+
+        it("registers the MPLUSTALENTS slash command", function()
+            assert.is_not_nil(_G.SlashCmdList["MPLUSTALENTS"])
+        end)
+
+        it("shows the notification frame with talents for a dungeon", function()
+            _G.SlashCmdList["MPLUSTALENTS"]("test")
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_not_nil(notif)
+            assert.is_true(notif._data.shown)
+        end)
+
+        it("includes a dungeon name in the title", function()
+            _G.SlashCmdList["MPLUSTALENTS"]("test")
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            local title = notif._data.fontStrings[1]._data.text
+            -- Should contain some dungeon name and class/spec info
+            assert.is_truthy(title:find("Elemental"))
+            assert.is_truthy(title:find("Shaman"))
+        end)
+
+        it("shows talent rows", function()
+            _G.SlashCmdList["MPLUSTALENTS"]("test")
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            -- Should have at least one talent row (fontStrings[2+])
+            assert.is_true(#notif._data.fontStrings >= 2)
+        end)
+
+        it("prints a message when no data exists for the player's class", function()
+            _G._playerClass = "DEMONHUNTER"
+            _G._playerClassName = "Demon Hunter"
+            _G._specIndex = 1
+            _G._specName = "Havoc"
+            _G.SlashCmdList["MPLUSTALENTS"]("test")
+            local output = table.concat(addon.getPrinted(), "\n")
+            assert.is_truthy(output:find("no talent recommendations"))
         end)
     end)
 end)
