@@ -17,6 +17,7 @@ local function createMockWidget()
         registeredForDrag = nil,
         fontStrings = {},
         textures = {},
+        childFrames = {},
         scripts = {},
     }
     local widget = { _data = data }
@@ -97,11 +98,34 @@ local function resetMocks()
     -- UIParent mock
     _G.UIParent = createMockWidget()
 
+    -- GameTooltip mock
+    _G._tooltipData = { owner = nil, anchor = nil, spellID = nil, shown = false }
+    _G.GameTooltip = {
+        SetOwner = function(self, owner, anchor)
+            _G._tooltipData.owner = owner
+            _G._tooltipData.anchor = anchor
+        end,
+        SetSpellByID = function(self, spellID)
+            _G._tooltipData.spellID = spellID
+        end,
+        Show = function(self)
+            _G._tooltipData.shown = true
+        end,
+        Hide = function(self)
+            _G._tooltipData.shown = false
+            _G._tooltipData.spellID = nil
+        end,
+    }
+
     -- CreateFrame mock
     _G.CreateFrame = function(frameType, name, parent, template)
         local frame = createMockWidget()
         if name then
             _G._frames[name] = frame
+        end
+        -- Track parent-child relationship
+        if parent and parent._data and parent._data.childFrames then
+            table.insert(parent._data.childFrames, frame)
         end
         -- First frame created becomes the event frame
         if not eventFrame then

@@ -298,6 +298,7 @@ local function ShowNotification(dungeonName, specName, className, talents, affix
     for _, row in ipairs(talentRows) do
         row.icon:Hide()
         row.text:Hide()
+        row.frame:Hide()
     end
 
     local title = specName .. " " .. className .. " — " .. dungeonName
@@ -314,11 +315,15 @@ local function ShowNotification(dungeonName, specName, className, talents, affix
             row.icon = notifFrame:CreateTexture(nil, "ARTWORK")
             row.icon:SetSize(24, 24)
             row.text = notifFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            row.frame = CreateFrame("Frame", nil, notifFrame)
+            row.frame:SetSize(268, 24)
+            row.frame:SetAllPoints(row.icon)
             talentRows[i] = row
         end
 
         row.icon:SetPoint("TOPLEFT", notifFrame, "TOPLEFT", 16, yOffset)
         row.text:SetPoint("LEFT", row.icon, "RIGHT", 8, 0)
+        row.frame:SetPoint("TOPLEFT", notifFrame, "TOPLEFT", 16, yOffset)
 
         local spellName = type(entry) == "table" and entry.name or entry
         local niceToHave = type(entry) == "table" and entry.niceToHave
@@ -326,9 +331,11 @@ local function ShowNotification(dungeonName, specName, className, talents, affix
         local iconID = 134400 -- default question mark
         local spellInfo = C_Spell and C_Spell.GetSpellInfo and C_Spell.GetSpellInfo(spellName)
         local playerHasSpell = false
+        local spellID = nil
         if spellInfo and spellInfo.iconID then
             iconID = spellInfo.iconID
-            if spellInfo.spellID and IsPlayerSpell and IsPlayerSpell(spellInfo.spellID) then
+            spellID = spellInfo.spellID
+            if spellID and IsPlayerSpell and IsPlayerSpell(spellID) then
                 playerHasSpell = true
             end
         end
@@ -343,6 +350,23 @@ local function ShowNotification(dungeonName, specName, className, talents, affix
         row.icon:SetDesaturated(not playerHasSpell)
         row.icon:Show()
         row.text:Show()
+
+        -- Spell tooltip on hover
+        if spellID then
+            row.frame:SetScript("OnEnter", function(self)
+                GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                GameTooltip:SetSpellByID(spellID)
+                GameTooltip:Show()
+            end)
+            row.frame:SetScript("OnLeave", function(self)
+                GameTooltip:Hide()
+            end)
+        else
+            row.frame:SetScript("OnEnter", nil)
+            row.frame:SetScript("OnLeave", nil)
+        end
+
+        row.frame:Show()
 
         yOffset = yOffset - 30
     end

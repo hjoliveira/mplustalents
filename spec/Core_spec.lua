@@ -457,6 +457,50 @@ describe("MPlusTalents", function()
         end)
     end)
 
+    describe("spell tooltips on talent rows", function()
+        before_each(function()
+            _G._instanceID = 2811
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 1
+            _G._specName = "Elemental"
+        end)
+
+        it("shows a spell tooltip on mouse enter", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            -- childFrames[1] is the close button; talent row frames start at [2]
+            local rowFrame = notif._data.childFrames[2]
+            assert.is_not_nil(rowFrame)
+            assert.is_not_nil(rowFrame._data.scripts["OnEnter"])
+            -- Simulate mouse enter
+            rowFrame._data.scripts["OnEnter"](rowFrame)
+            assert.is_true(_G._tooltipData.shown)
+            -- Tremor Totem spellID = 8143
+            assert.are.equal(8143, _G._tooltipData.spellID)
+        end)
+
+        it("hides the tooltip on mouse leave", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            local rowFrame = notif._data.childFrames[2]
+            -- Enter then leave
+            rowFrame._data.scripts["OnEnter"](rowFrame)
+            assert.is_true(_G._tooltipData.shown)
+            rowFrame._data.scripts["OnLeave"](rowFrame)
+            assert.is_false(_G._tooltipData.shown)
+        end)
+
+        it("shows the correct spell for each row", function()
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            -- Second talent is Purge (spellID = 370); childFrames[3]
+            local rowFrame2 = notif._data.childFrames[3]
+            rowFrame2._data.scripts["OnEnter"](rowFrame2)
+            assert.are.equal(370, _G._tooltipData.spellID)
+        end)
+    end)
+
     describe("close button", function()
         before_each(function()
             _G._instanceID = 2811
