@@ -291,7 +291,7 @@ local function CreateNotificationFrame()
     return f
 end
 
-local function ShowNotification(dungeonName, specName, className, talents, affixName)
+local function ShowNotification(dungeonName, talents, affixName)
     if not notifFrame then
         notifFrame = CreateNotificationFrame()
     end
@@ -303,7 +303,7 @@ local function ShowNotification(dungeonName, specName, className, talents, affix
         row.frame:Hide()
     end
 
-    local title = specName .. " " .. className .. " — " .. dungeonName
+    local title = dungeonName
     if affixName then
         title = title .. " (" .. affixName .. ")"
     end
@@ -411,7 +411,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
         local affixNames = GetCurrentAffixNames()
         local talents, matchedAffix = SelectTalents(dungeonTalents, classToken, specName, affixNames)
 
-        ShowNotification(dungeonData.dungeonName, specName, className, talents, matchedAffix)
+        ShowNotification(dungeonData.dungeonName, talents, matchedAffix)
     end
 end)
 
@@ -436,7 +436,7 @@ SlashCmdList["MPLUSTALENTS"] = function(msg)
             local dungeonTalents = classData and classData[specName]
             if dungeonTalents and #dungeonTalents > 0 then
                 local talents, matchedAffix = SelectTalents(dungeonTalents, classToken, specName, affixNames)
-                ShowNotification(dungeonData.dungeonName, specName, className, talents, matchedAffix)
+                ShowNotification(dungeonData.dungeonName, talents, matchedAffix)
                 return
             end
         end

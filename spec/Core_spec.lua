@@ -32,15 +32,15 @@ describe("MPlusTalents", function()
             assert.is_true(notif._data.shown)
         end)
 
-        it("sets the title with dungeon, spec and class", function()
+        it("sets the title with only the dungeon name", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local notif = addon.getFrame("MPlusTalentsNotification")
             local title = notif._data.fontStrings[1]
             assert.is_not_nil(title)
             local text = title._data.text
             assert.is_truthy(text:find("Magisters' Terrace"))
-            assert.is_truthy(text:find("Elemental"))
-            assert.is_truthy(text:find("Shaman"))
+            assert.is_falsy(text:find("Elemental"))
+            assert.is_falsy(text:find("Shaman"))
         end)
 
         it("creates a row for each talent with icon and name", function()
@@ -110,7 +110,8 @@ describe("MPlusTalents", function()
             local notif = addon.getFrame("MPlusTalentsNotification")
             assert.is_true(notif._data.shown)
             local title = notif._data.fontStrings[1]
-            assert.is_truthy(title._data.text:find("Restoration"))
+            assert.is_truthy(title._data.text:find("Magisters' Terrace"))
+            assert.is_falsy(title._data.text:find("Restoration"))
             -- 3 Restoration talents from utility table
             assert.are.equal("Tremor Totem (nice to have)", notif._data.fontStrings[2]._data.text)
             assert.are.equal("Purge", notif._data.fontStrings[3]._data.text)
@@ -559,13 +560,13 @@ describe("MPlusTalents", function()
             assert.is_true(notif._data.shown)
         end)
 
-        it("includes a dungeon name in the title", function()
+        it("includes only the dungeon name in the title", function()
             _G.SlashCmdList["MPLUSTALENTS"]("test")
             local notif = addon.getFrame("MPlusTalentsNotification")
             local title = notif._data.fontStrings[1]._data.text
-            -- Should contain some dungeon name and class/spec info
-            assert.is_truthy(title:find("Elemental"))
-            assert.is_truthy(title:find("Shaman"))
+            -- Should contain a dungeon name but not class/spec info
+            assert.is_falsy(title:find("Elemental"))
+            assert.is_falsy(title:find("Shaman"))
         end)
 
         it("shows talent rows", function()
