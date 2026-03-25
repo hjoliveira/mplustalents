@@ -68,6 +68,9 @@ local function resetMocks()
     -- Named frames registry
     _G._frames = {}
 
+    -- Slash command registry
+    _G.SlashCmdList = {}
+
     -- Timers registry
     _G._timers = {}
 

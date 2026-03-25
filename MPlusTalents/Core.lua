@@ -409,3 +409,33 @@ frame:SetScript("OnEvent", function(self, event, ...)
         ShowNotification(dungeonData.dungeonName, specName, className, talents, matchedAffix)
     end
 end)
+
+----------------------------------------------------------------
+-- Slash command
+----------------------------------------------------------------
+
+SLASH_MPLUSTALENTS1 = "/mpt"
+SlashCmdList["MPLUSTALENTS"] = function(msg)
+    msg = (msg or ""):lower():match("^%s*(.-)%s*$")
+
+    if msg == "test" then
+        local className, classToken = UnitClass("player")
+        local specIndex = GetSpecialization()
+        local _, specName = GetSpecializationInfo(specIndex)
+
+        local affixNames = GetCurrentAffixNames()
+
+        -- Find the first dungeon with data for this class/spec
+        for _, dungeonData in pairs(TALENT_DATA) do
+            local classData = dungeonData.classes[classToken]
+            local dungeonTalents = classData and classData[specName]
+            if dungeonTalents and #dungeonTalents > 0 then
+                local talents, matchedAffix = SelectTalents(dungeonTalents, classToken, specName, affixNames)
+                ShowNotification(dungeonData.dungeonName, specName, className, talents, matchedAffix)
+                return
+            end
+        end
+
+        print(ADDON_PREFIX .. " no talent recommendations for " .. specName .. " " .. className .. " yet.")
+    end
+end

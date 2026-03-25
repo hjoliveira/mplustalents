@@ -520,4 +520,50 @@ describe("MPlusTalents", function()
             assert.is_false(notif._data.shown)
         end)
     end)
+
+    describe("/mpt test slash command", function()
+        before_each(function()
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 1
+            _G._specName = "Elemental"
+        end)
+
+        it("registers the MPLUSTALENTS slash command", function()
+            assert.is_not_nil(_G.SlashCmdList["MPLUSTALENTS"])
+        end)
+
+        it("shows the notification frame with talents for a dungeon", function()
+            _G.SlashCmdList["MPLUSTALENTS"]("test")
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_not_nil(notif)
+            assert.is_true(notif._data.shown)
+        end)
+
+        it("includes a dungeon name in the title", function()
+            _G.SlashCmdList["MPLUSTALENTS"]("test")
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            local title = notif._data.fontStrings[1]._data.text
+            -- Should contain some dungeon name and class/spec info
+            assert.is_truthy(title:find("Elemental"))
+            assert.is_truthy(title:find("Shaman"))
+        end)
+
+        it("shows talent rows", function()
+            _G.SlashCmdList["MPLUSTALENTS"]("test")
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            -- Should have at least one talent row (fontStrings[2+])
+            assert.is_true(#notif._data.fontStrings >= 2)
+        end)
+
+        it("prints a message when no data exists for the player's class", function()
+            _G._playerClass = "DEMONHUNTER"
+            _G._playerClassName = "Demon Hunter"
+            _G._specIndex = 1
+            _G._specName = "Havoc"
+            _G.SlashCmdList["MPLUSTALENTS"]("test")
+            local output = table.concat(addon.getPrinted(), "\n")
+            assert.is_truthy(output:find("no talent recommendations"))
+        end)
+    end)
 end)
