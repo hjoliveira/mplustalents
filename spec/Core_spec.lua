@@ -415,7 +415,7 @@ describe("MPlusTalents", function()
         end)
     end)
 
-    describe("hiding icons for talents the player does not have", function()
+    describe("icons for talents the player does not have", function()
         before_each(function()
             _G._instanceID = 2811
             _G._playerClass = "SHAMAN"
@@ -424,36 +424,36 @@ describe("MPlusTalents", function()
             _G._specName = "Elemental"
         end)
 
-        it("hides the icon when the player does not have the talent", function()
+        it("desaturates the icon when the player does not have the talent", function()
             -- Player has Purge but NOT Tremor Totem or Spirit Walk
             _G._playerSpells = { [370] = true }
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local notif = addon.getFrame("MPlusTalentsNotification")
-            -- Tremor Totem icon (index 1) should be hidden
-            assert.is_false(notif._data.textures[1]._data.shown)
-            -- Purge icon (index 2) should be shown
-            assert.is_true(notif._data.textures[2]._data.shown)
-            -- Spirit Walk icon (index 3) should be hidden
-            assert.is_false(notif._data.textures[3]._data.shown)
+            -- Tremor Totem icon (index 1) should be desaturated
+            assert.is_true(notif._data.textures[1]._data.desaturated)
+            -- Purge icon (index 2) should not be desaturated
+            assert.is_false(notif._data.textures[2]._data.desaturated)
+            -- Spirit Walk icon (index 3) should be desaturated
+            assert.is_true(notif._data.textures[3]._data.desaturated)
         end)
 
-        it("shows the icon when the player has the talent", function()
+        it("shows the icon in full color when the player has the talent", function()
             -- Player has all three talents
             _G._playerSpells = { [8143] = true, [370] = true, [58875] = true }
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local notif = addon.getFrame("MPlusTalentsNotification")
             for i = 1, 3 do
-                assert.is_true(notif._data.textures[i]._data.shown)
+                assert.is_false(notif._data.textures[i]._data.desaturated)
             end
         end)
 
-        it("still shows the text for talents without icons", function()
+        it("always shows the icon even when the player lacks the talent", function()
             _G._playerSpells = {}
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local notif = addon.getFrame("MPlusTalentsNotification")
-            -- Text should still be visible for all talents
-            assert.are.equal("Tremor Totem (nice to have)", notif._data.fontStrings[2]._data.text)
-            assert.is_true(notif._data.fontStrings[2]._data.shown)
+            for i = 1, 3 do
+                assert.is_true(notif._data.textures[i]._data.shown)
+            end
         end)
     end)
 

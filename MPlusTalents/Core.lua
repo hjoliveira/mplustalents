@@ -340,11 +340,8 @@ local function ShowNotification(dungeonName, specName, className, talents, affix
         end
         row.text:SetText(displayText)
 
-        if playerHasSpell then
-            row.icon:Show()
-        else
-            row.icon:Hide()
-        end
+        row.icon:SetDesaturated(not playerHasSpell)
+        row.icon:Show()
         row.text:Show()
 
         yOffset = yOffset - 30

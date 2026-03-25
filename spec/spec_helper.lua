@@ -12,6 +12,7 @@ local function createMockWidget()
         shown = true,
         text = nil,
         texture = nil,
+        desaturated = false,
         movable = false,
         registeredForDrag = nil,
         fontStrings = {},
@@ -31,6 +32,7 @@ local function createMockWidget()
     widget.SetText = function(self, text) data.text = text end
     widget.GetText = function(self) return data.text end
     widget.SetTexture = function(self, tex) data.texture = tex end
+    widget.SetDesaturated = function(self, desaturated) data.desaturated = desaturated end
     widget.SetMovable = function(self, movable) data.movable = movable end
     widget.RegisterForDrag = function(self, button) data.registeredForDrag = button end
     widget.SetScript = function(self, scriptType, handler)
