@@ -43,16 +43,19 @@ local TALENT_DATA = {
                     { name = "Cleanse Spirit", spellID = 51886 },
                     { name = "Purge", spellID = 370 },
                     { name = "Poison Cleansing Totem", spellID = 383013 },
+                    { name = "Gust of Wind", spellID = 192063 },
                 },
                 ["Enhancement"] = {
                     { name = "Cleanse Spirit", spellID = 51886 },
                     { name = "Purge", spellID = 370 },
                     { name = "Poison Cleansing Totem", spellID = 383013 },
+                    { name = "Gust of Wind", spellID = 192063 },
                 },
                 ["Restoration"] = {
                     { name = "Cleanse Spirit", spellID = 51886 },
                     { name = "Purge", spellID = 370 },
                     { name = "Poison Cleansing Totem", spellID = 383013 },
+                    { name = "Gust of Wind", spellID = 192063 },
                 },
             },
         },
@@ -110,12 +113,15 @@ local TALENT_DATA = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
                     { name = "Poison Cleansing Totem", spellID = 383013 },
+                    { name = "Gust of Wind", spellID = 192063 },
                 },
                 ["Enhancement"] = {
                     { name = "Poison Cleansing Totem", spellID = 383013 },
+                    { name = "Gust of Wind", spellID = 192063 },
                 },
                 ["Restoration"] = {
                     { name = "Poison Cleansing Totem", spellID = 383013 },
+                    { name = "Gust of Wind", spellID = 192063 },
                 },
             },
         },
