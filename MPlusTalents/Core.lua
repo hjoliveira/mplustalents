@@ -215,46 +215,6 @@ local AFFIX_TALENT_DATA = {
     },
 }
 
--- Choice node defaults keyed by class token.  Each entry lists the spellIDs
--- that share a choice node and the default talent to recommend when none of
--- those spellIDs appear in the dungeon talent list.
-local CHOICE_NODE_DEFAULTS = {
-    ["SHAMAN"] = {
-        {
-            spellIDs = { [58875] = true, [192063] = true }, -- Spirit Walk / Gust of Wind
-            default  = { name = "Gust of Wind", spellID = 192063 },
-        },
-    },
-}
-
--- Appends choice-node default talents to a talent list when none of the
--- choice-node spellIDs are already present.  Returns a new list.
-local function ApplyChoiceNodeDefaults(talents, classToken)
-    local nodes = CHOICE_NODE_DEFAULTS[classToken]
-    if not nodes then return talents end
-
-    local result = {}
-    for _, entry in ipairs(talents) do
-        table.insert(result, entry)
-    end
-
-    for _, node in ipairs(nodes) do
-        local found = false
-        for _, entry in ipairs(talents) do
-            local sid = type(entry) == "table" and entry.spellID or nil
-            if sid and node.spellIDs[sid] then
-                found = true
-                break
-            end
-        end
-        if not found then
-            table.insert(result, node.default)
-        end
-    end
-
-    return result
-end
-
 ----------------------------------------------------------------
 -- Affix helpers
 ----------------------------------------------------------------
@@ -286,11 +246,11 @@ local function SelectTalents(dungeonTalents, classToken, specName, affixNames)
     if affixSpecData then
         for _, affixName in ipairs(affixNames) do
             if affixSpecData[affixName] then
-                return ApplyChoiceNodeDefaults(affixSpecData[affixName], classToken), affixName
+                return affixSpecData[affixName], affixName
             end
         end
     end
-    return ApplyChoiceNodeDefaults(dungeonTalents, classToken), nil
+    return dungeonTalents, nil
 end
 
 ----------------------------------------------------------------
