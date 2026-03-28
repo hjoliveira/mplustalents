@@ -352,6 +352,7 @@ local function ShowNotification(dungeonName, talents, affixName)
         end
         row.text:SetText(displayText)
 
+        row.spellID = spellID
         row.icon:SetDesaturated(not playerHasSpell)
         row.icon:Show()
         row.text:Show()
@@ -380,14 +381,30 @@ local function ShowNotification(dungeonName, talents, affixName)
     notifFrame:Show()
 end
 
+local function RefreshIconTints()
+    if not notifFrame or not notifFrame:IsShown() then return end
+    for _, row in ipairs(talentRows) do
+        if row.icon:IsShown() and row.spellID then
+            local playerHasSpell = IsPlayerSpell and IsPlayerSpell(row.spellID)
+            row.icon:SetDesaturated(not playerHasSpell)
+        end
+    end
+end
+
 ----------------------------------------------------------------
 -- Event handling
 ----------------------------------------------------------------
 
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+frame:RegisterEvent("PLAYER_TALENT_UPDATE")
 
 frame:SetScript("OnEvent", function(self, event, ...)
+    if event == "PLAYER_TALENT_UPDATE" then
+        RefreshIconTints()
+        return
+    end
+
     if event == "PLAYER_ENTERING_WORLD" then
         local _, _, _, _, _, _, _, instanceID = GetInstanceInfo()
 

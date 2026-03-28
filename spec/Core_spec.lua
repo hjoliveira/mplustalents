@@ -477,6 +477,47 @@ describe("MPlusTalents", function()
         end)
     end)
 
+    describe("refreshing icon tint when talents change", function()
+        before_each(function()
+            _G._instanceID = 2811
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 1
+            _G._specName = "Elemental"
+        end)
+
+        it("registers for PLAYER_TALENT_UPDATE", function()
+            local events = addon.getRegisteredEvents()
+            assert.is_true(events["PLAYER_TALENT_UPDATE"] == true)
+        end)
+
+        it("updates icon desaturation when talents change", function()
+            -- Start with no talents
+            _G._playerSpells = {}
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            -- All icons should be desaturated
+            assert.is_true(notif._data.textures[1]._data.desaturated)
+            assert.is_true(notif._data.textures[2]._data.desaturated)
+            assert.is_true(notif._data.textures[3]._data.desaturated)
+
+            -- Player learns Purge (spellID 370)
+            _G._playerSpells = { [370] = true }
+            addon.fireEvent("PLAYER_TALENT_UPDATE")
+            -- Purge icon (index 2) should no longer be desaturated
+            assert.is_true(notif._data.textures[1]._data.desaturated)
+            assert.is_false(notif._data.textures[2]._data.desaturated)
+            assert.is_true(notif._data.textures[3]._data.desaturated)
+        end)
+
+        it("does not error when no notification is visible", function()
+            -- Fire talent update without ever showing the notification
+            assert.has_no.errors(function()
+                addon.fireEvent("PLAYER_TALENT_UPDATE")
+            end)
+        end)
+    end)
+
     describe("spell tooltips on talent rows", function()
         before_each(function()
             _G._instanceID = 2811
