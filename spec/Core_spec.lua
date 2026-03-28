@@ -306,7 +306,7 @@ describe("MPlusTalents", function()
             assert.are.equal("Spirit Walk", notif._data.fontStrings[3]._data.text)
         end)
 
-        it("shows correct talents for Windrunner Spire", function()
+        it("shows correct talents for Windrunner Spire with default Gust of Wind", function()
             _G._instanceID = 2805
             _G._playerClass = "SHAMAN"
             _G._playerClassName = "Shaman"
@@ -318,6 +318,7 @@ describe("MPlusTalents", function()
             assert.are.equal("Cleanse Spirit", notif._data.fontStrings[2]._data.text)
             assert.are.equal("Purge", notif._data.fontStrings[3]._data.text)
             assert.are.equal("Poison Cleansing Totem", notif._data.fontStrings[4]._data.text)
+            assert.are.equal("Gust of Wind", notif._data.fontStrings[5]._data.text)
         end)
 
         it("shows correct talents for Skyreach", function()
@@ -376,7 +377,7 @@ describe("MPlusTalents", function()
             assert.are.equal("Spirit Walk", notif._data.fontStrings[4]._data.text)
         end)
 
-        it("shows correct talents for Algeth'ar Academy", function()
+        it("shows correct talents for Algeth'ar Academy with default Gust of Wind", function()
             _G._instanceID = 2526
             _G._playerClass = "SHAMAN"
             _G._playerClassName = "Shaman"
@@ -386,6 +387,39 @@ describe("MPlusTalents", function()
             local notif = addon.getFrame("MPlusTalentsNotification")
             assert.is_true(notif._data.shown)
             assert.are.equal("Poison Cleansing Totem", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Gust of Wind", notif._data.fontStrings[3]._data.text)
+        end)
+
+        it("does not duplicate Gust of Wind for Skyreach where it is already listed", function()
+            _G._instanceID = 1209
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 1
+            _G._specName = "Elemental"
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_true(notif._data.shown)
+            -- Only 2 talents: Purge and Gust of Wind (no duplicate)
+            assert.are.equal("Purge", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Gust of Wind", notif._data.fontStrings[3]._data.text)
+            -- Title + 2 talents = 3 fontStrings total
+            assert.are.equal(3, #notif._data.fontStrings)
+        end)
+
+        it("does not add Gust of Wind when Spirit Walk is already recommended", function()
+            _G._instanceID = 2874
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 1
+            _G._specName = "Elemental"
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            assert.is_true(notif._data.shown)
+            -- Only 2 talents: Purge and Spirit Walk (no Gust of Wind)
+            assert.are.equal("Purge", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Spirit Walk", notif._data.fontStrings[3]._data.text)
+            -- Title + 2 talents = 3 fontStrings total
+            assert.are.equal(3, #notif._data.fontStrings)
         end)
     end)
 
