@@ -43,16 +43,19 @@ local TALENT_DATA = {
                     { name = "Cleanse Spirit", spellID = 51886 },
                     { name = "Purge", spellID = 370 },
                     { name = "Poison Cleansing Totem", spellID = 383013 },
+                    { name = "Gust of Wind", spellID = 192063 },
                 },
                 ["Enhancement"] = {
                     { name = "Cleanse Spirit", spellID = 51886 },
                     { name = "Purge", spellID = 370 },
                     { name = "Poison Cleansing Totem", spellID = 383013 },
+                    { name = "Gust of Wind", spellID = 192063 },
                 },
                 ["Restoration"] = {
                     { name = "Cleanse Spirit", spellID = 51886 },
                     { name = "Purge", spellID = 370 },
                     { name = "Poison Cleansing Totem", spellID = 383013 },
+                    { name = "Gust of Wind", spellID = 192063 },
                 },
             },
         },
@@ -110,12 +113,15 @@ local TALENT_DATA = {
             ["SHAMAN"] = {
                 ["Elemental"] = {
                     { name = "Poison Cleansing Totem", spellID = 383013 },
+                    { name = "Gust of Wind", spellID = 192063 },
                 },
                 ["Enhancement"] = {
                     { name = "Poison Cleansing Totem", spellID = 383013 },
+                    { name = "Gust of Wind", spellID = 192063 },
                 },
                 ["Restoration"] = {
                     { name = "Poison Cleansing Totem", spellID = 383013 },
+                    { name = "Gust of Wind", spellID = 192063 },
                 },
             },
         },
@@ -291,7 +297,7 @@ local function CreateNotificationFrame()
     return f
 end
 
-local function ShowNotification(dungeonName, specName, className, talents, affixName)
+local function ShowNotification(dungeonName, talents, affixName)
     if not notifFrame then
         notifFrame = CreateNotificationFrame()
     end
@@ -303,7 +309,7 @@ local function ShowNotification(dungeonName, specName, className, talents, affix
         row.frame:Hide()
     end
 
-    local title = specName .. " " .. className .. " — " .. dungeonName
+    local title = dungeonName
     if affixName then
         title = title .. " (" .. affixName .. ")"
     end
@@ -352,6 +358,7 @@ local function ShowNotification(dungeonName, specName, className, talents, affix
         end
         row.text:SetText(displayText)
 
+        row.spellID = spellID
         row.icon:SetDesaturated(not playerHasSpell)
         row.icon:Show()
         row.text:Show()
@@ -380,14 +387,30 @@ local function ShowNotification(dungeonName, specName, className, talents, affix
     notifFrame:Show()
 end
 
+local function RefreshIconTints()
+    if not notifFrame or not notifFrame:IsShown() then return end
+    for _, row in ipairs(talentRows) do
+        if row.icon:IsShown() and row.spellID then
+            local playerHasSpell = IsPlayerSpell and IsPlayerSpell(row.spellID)
+            row.icon:SetDesaturated(not playerHasSpell)
+        end
+    end
+end
+
 ----------------------------------------------------------------
 -- Event handling
 ----------------------------------------------------------------
 
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+frame:RegisterEvent("PLAYER_TALENT_UPDATE")
 
 frame:SetScript("OnEvent", function(self, event, ...)
+    if event == "PLAYER_TALENT_UPDATE" then
+        RefreshIconTints()
+        return
+    end
+
     if event == "PLAYER_ENTERING_WORLD" then
         local _, _, _, _, _, _, _, instanceID = GetInstanceInfo()
 
@@ -411,7 +434,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
         local affixNames = GetCurrentAffixNames()
         local talents, matchedAffix = SelectTalents(dungeonTalents, classToken, specName, affixNames)
 
-        ShowNotification(dungeonData.dungeonName, specName, className, talents, matchedAffix)
+        ShowNotification(dungeonData.dungeonName, talents, matchedAffix)
     end
 end)
 
@@ -436,7 +459,7 @@ SlashCmdList["MPLUSTALENTS"] = function(msg)
             local dungeonTalents = classData and classData[specName]
             if dungeonTalents and #dungeonTalents > 0 then
                 local talents, matchedAffix = SelectTalents(dungeonTalents, classToken, specName, affixNames)
-                ShowNotification(dungeonData.dungeonName, specName, className, talents, matchedAffix)
+                ShowNotification(dungeonData.dungeonName, talents, matchedAffix)
                 return
             end
         end

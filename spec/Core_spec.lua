@@ -32,15 +32,15 @@ describe("MPlusTalents", function()
             assert.is_true(notif._data.shown)
         end)
 
-        it("sets the title with dungeon, spec and class", function()
+        it("sets the title with only the dungeon name", function()
             addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
             local notif = addon.getFrame("MPlusTalentsNotification")
             local title = notif._data.fontStrings[1]
             assert.is_not_nil(title)
             local text = title._data.text
             assert.is_truthy(text:find("Magisters' Terrace"))
-            assert.is_truthy(text:find("Elemental"))
-            assert.is_truthy(text:find("Shaman"))
+            assert.is_falsy(text:find("Elemental"))
+            assert.is_falsy(text:find("Shaman"))
         end)
 
         it("creates a row for each talent with icon and name", function()
@@ -110,7 +110,8 @@ describe("MPlusTalents", function()
             local notif = addon.getFrame("MPlusTalentsNotification")
             assert.is_true(notif._data.shown)
             local title = notif._data.fontStrings[1]
-            assert.is_truthy(title._data.text:find("Restoration"))
+            assert.is_truthy(title._data.text:find("Magisters' Terrace"))
+            assert.is_falsy(title._data.text:find("Restoration"))
             -- 3 Restoration talents from utility table
             assert.are.equal("Tremor Totem (nice to have)", notif._data.fontStrings[2]._data.text)
             assert.are.equal("Purge", notif._data.fontStrings[3]._data.text)
@@ -317,6 +318,7 @@ describe("MPlusTalents", function()
             assert.are.equal("Cleanse Spirit", notif._data.fontStrings[2]._data.text)
             assert.are.equal("Purge", notif._data.fontStrings[3]._data.text)
             assert.are.equal("Poison Cleansing Totem", notif._data.fontStrings[4]._data.text)
+            assert.are.equal("Gust of Wind", notif._data.fontStrings[5]._data.text)
         end)
 
         it("shows correct talents for Skyreach", function()
@@ -385,6 +387,7 @@ describe("MPlusTalents", function()
             local notif = addon.getFrame("MPlusTalentsNotification")
             assert.is_true(notif._data.shown)
             assert.are.equal("Poison Cleansing Totem", notif._data.fontStrings[2]._data.text)
+            assert.are.equal("Gust of Wind", notif._data.fontStrings[3]._data.text)
         end)
     end)
 
@@ -476,6 +479,47 @@ describe("MPlusTalents", function()
         end)
     end)
 
+    describe("refreshing icon tint when talents change", function()
+        before_each(function()
+            _G._instanceID = 2811
+            _G._playerClass = "SHAMAN"
+            _G._playerClassName = "Shaman"
+            _G._specIndex = 1
+            _G._specName = "Elemental"
+        end)
+
+        it("registers for PLAYER_TALENT_UPDATE", function()
+            local events = addon.getRegisteredEvents()
+            assert.is_true(events["PLAYER_TALENT_UPDATE"] == true)
+        end)
+
+        it("updates icon desaturation when talents change", function()
+            -- Start with no talents
+            _G._playerSpells = {}
+            addon.fireEvent("PLAYER_ENTERING_WORLD", true, false)
+            local notif = addon.getFrame("MPlusTalentsNotification")
+            -- All icons should be desaturated
+            assert.is_true(notif._data.textures[1]._data.desaturated)
+            assert.is_true(notif._data.textures[2]._data.desaturated)
+            assert.is_true(notif._data.textures[3]._data.desaturated)
+
+            -- Player learns Purge (spellID 370)
+            _G._playerSpells = { [370] = true }
+            addon.fireEvent("PLAYER_TALENT_UPDATE")
+            -- Purge icon (index 2) should no longer be desaturated
+            assert.is_true(notif._data.textures[1]._data.desaturated)
+            assert.is_false(notif._data.textures[2]._data.desaturated)
+            assert.is_true(notif._data.textures[3]._data.desaturated)
+        end)
+
+        it("does not error when no notification is visible", function()
+            -- Fire talent update without ever showing the notification
+            assert.has_no.errors(function()
+                addon.fireEvent("PLAYER_TALENT_UPDATE")
+            end)
+        end)
+    end)
+
     describe("spell tooltips on talent rows", function()
         before_each(function()
             _G._instanceID = 2811
@@ -559,13 +603,13 @@ describe("MPlusTalents", function()
             assert.is_true(notif._data.shown)
         end)
 
-        it("includes a dungeon name in the title", function()
+        it("includes only the dungeon name in the title", function()
             _G.SlashCmdList["MPLUSTALENTS"]("test")
             local notif = addon.getFrame("MPlusTalentsNotification")
             local title = notif._data.fontStrings[1]._data.text
-            -- Should contain some dungeon name and class/spec info
-            assert.is_truthy(title:find("Elemental"))
-            assert.is_truthy(title:find("Shaman"))
+            -- Should contain a dungeon name but not class/spec info
+            assert.is_falsy(title:find("Elemental"))
+            assert.is_falsy(title:find("Shaman"))
         end)
 
         it("shows talent rows", function()
